@@ -72,7 +72,7 @@ export function ReservationDrawer({
     e.preventDefault();
     const count = parseInt(editGuests, 10);
     if (!Number.isInteger(count) || count < 1) return;
-    await updateReservation(reservation.id, {
+    const updated = await updateReservation(reservation.id, {
       reservationDate: editDate,
       reservationTime: editTime,
       guestCount: count,
@@ -80,7 +80,9 @@ export function ReservationDrawer({
       managerNotes,
       actionNote: `Rescheduled / edited to ${editDate} ${editTime} (${count} guests)`,
     });
-    setRescheduleMode(false);
+    if (updated) {
+      setRescheduleMode(false);
+    }
   };
 
   return (

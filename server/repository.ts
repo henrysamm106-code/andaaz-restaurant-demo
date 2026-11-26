@@ -21,21 +21,155 @@ import type {
 } from '../src/types/management.ts';
 import { buildSyntheticDemoDataset, createDefaultSettings } from './seedDemoData.ts';
 
-export function getKarachiDateAndTime(): { dateStr: string; timeStr: string } {
-  const now = new Date();
+export function getKarachiDateAndTime(referenceNow: Date = new Date()): {
+  dateStr: string;
+  timeStr: string;
+  hour: number;
+  minute: number;
+  minutesSinceMidnight: number;
+} {
   const dateStr = new Intl.DateTimeFormat('en-CA', {
     timeZone: 'Asia/Karachi',
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
-  }).format(now);
-  const timeStr = new Intl.DateTimeFormat('en-GB', {
+  }).format(referenceNow);
+
+  const timeParts = new Intl.DateTimeFormat('en-GB', {
     timeZone: 'Asia/Karachi',
     hour: '2-digit',
     minute: '2-digit',
-    hour12: false,
-  }).format(now);
-  return { dateStr, timeStr };
+    hourCycle: 'h23',
+  }).formatToParts(referenceNow);
+
+  const hour = Number(timeParts.find((p) => p.type === 'hour')?.value ?? '0') % 24;
+  const minute = Number(timeParts.find((p) => p.type === 'minute')?.value ?? '0') % 60;
+  const timeStr = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+
+  return {
+    dateStr,
+    timeStr,
+    hour,
+    minute,
+    minutesSinceMidnight: hour * 60 + minute,
+  };
+}
+
+export function isValidCalendarDateStr(raw: string): boolean {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(raw)) return false;
+  const [year, month, day] = raw.split('-').map(Number);
+  if (month < 1 || month > 12 || day < 1 || day > 31) return false;
+  const dt = new Date(Date.UTC(year, month - 1, day));
+  return (
+    dt.getUTCFullYear() === year &&
+    dt.getUTCMonth() === month - 1 &&
+    dt.getUTCDate() === day
+  );
+}
+
+export function parseReservationTimeMinutes(
+  raw: string
+):
+  | { status: 'valid'; minutes: number }
+  | { status: 'invalid_clock' | 'unrecognized'; error: string } {
+  const trimmed = raw.trim();
+  if (!trimmed) {
+    return { status: 'unrecognized', error: 'reservation_time is required.' };
+  }
+
+  const twelveHourMatch = trimmed.match(
+    /(?:^|[^\d])(\d{1,2})(?::(\d{2}))?(?::(\d{2}))?\s*(am|pm)\b/i
+  );
+  if (twelveHourMatch) {
+    const hour = Number(twelveHourMatch[1]);
+    const minute = twelveHourMatch[2] !== undefined ? Number(twelveHourMatch[2]) : 0;
+    const second = twelveHourMatch[3] !== undefined ? Number(twelveHourMatch[3]) : 0;
+    const meridiem = twelveHourMatch[4].toLowerCase();
+
+    if (hour < 1 || hour > 12 || minute < 0 || minute > 59 || second < 0 || second > 59) {
+      return {
+        status: 'invalid_clock',
+        error:
+          'reservation_time must be a valid time in 24-hour (e.g. 20:00) or 12-hour (e.g. 8:00 PM) format.',
+      };
+    }
+
+    const hour24 =
+      meridiem === 'am' ? (hour === 12 ? 0 : hour) : hour === 12 ? 12 : hour + 12;
+    return { status: 'valid', minutes: hour24 * 60 + minute };
+  }
+
+  const twentyFourHourMatch = trimmed.match(
+    /(?:^|[^\d])(\d{1,2}):(\d{2})(?::(\d{2}))?(?:[^\d:]|$)/
+  );
+  if (twentyFourHourMatch) {
+    const hour = Number(twentyFourHourMatch[1]);
+    const minute = Number(twentyFourHourMatch[2]);
+    const second = twentyFourHourMatch[3] !== undefined ? Number(twentyFourHourMatch[3]) : 0;
+
+    if (hour < 0 || hour > 23 || minute < 0 || minute > 59 || second < 0 || second > 59) {
+      return {
+        status: 'invalid_clock',
+        error:
+          'reservation_time must be a valid time in 24-hour (e.g. 20:00) or 12-hour (e.g. 8:00 PM) format.',
+      };
+    }
+
+    return { status: 'valid', minutes: hour * 60 + minute };
+  }
+
+  return {
+    status: 'unrecognized',
+    error:
+      'reservation_time must include a valid time in 24-hour (e.g. 20:00) or 12-hour (e.g. 8:00 PM) format.',
+  };
+}
+
+export function validateReservationDateTimeKarachi(
+  dateRaw: string,
+  timeRaw: string,
+  referenceNow: Date = new Date()
+):
+  | { ok: true; dateStr: string; timeStr: string; minutes: number }
+  | { ok: false; error: string } {
+  const dateStr = dateRaw.trim();
+  const timeStr = timeRaw.trim();
+
+  if (!dateStr) {
+    return { ok: false, error: 'reservation_date is required in YYYY-MM-DD format.' };
+  }
+  if (!isValidCalendarDateStr(dateStr)) {
+    return {
+      ok: false,
+      error: 'reservation_date must be a valid calendar date in YYYY-MM-DD format.',
+    };
+  }
+  if (!timeStr) {
+    return { ok: false, error: 'reservation_time is required.' };
+  }
+
+  const parsedTime = parseReservationTimeMinutes(timeStr);
+  if (parsedTime.status !== 'valid') {
+    return { ok: false, error: parsedTime.error };
+  }
+
+  const karachi = getKarachiDateAndTime(referenceNow);
+
+  if (dateStr < karachi.dateStr) {
+    return {
+      ok: false,
+      error: `reservation_date (${dateStr}) is in the past. Current date in Asia/Karachi is ${karachi.dateStr}.`,
+    };
+  }
+
+  if (dateStr === karachi.dateStr && parsedTime.minutes <= karachi.minutesSinceMidnight) {
+    return {
+      ok: false,
+      error: `reservation_time (${timeStr}) has already elapsed today (${karachi.dateStr}) in Asia/Karachi (current time: ${karachi.timeStr} PKT).`,
+    };
+  }
+
+  return { ok: true, dateStr, timeStr, minutes: parsedTime.minutes };
 }
 
 export function normalizePhone(raw: string): string {

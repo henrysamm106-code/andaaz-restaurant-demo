@@ -6,7 +6,10 @@ import {
   getKarachiDateAndTime,
   getN8nChatProxyConfig,
   issueManagerBearerToken,
+  isValidCalendarDateStr,
+  parseReservationTimeMinutes,
   repository,
+  validateReservationDateTimeKarachi,
   verifyManagerBearerToken,
   verifyManagerPasscode,
   verifyN8nBearerToken,
@@ -42,8 +45,8 @@ function isValidPhone(raw: string): boolean {
   return /^[+\d\s().-]+$/.test(raw.trim()) && digits.length >= 7 && digits.length <= 15;
 }
 
-function isValidDateStr(d: string): boolean {
-  return /^\d{4}-\d{2}-\d{2}$/.test(d);
+function formatValidationError(res: Response, message: string) {
+  res.status(400).json({ ok: false, error: 'validation_error', message });
 }
 
 // Rate limiter for public-facing reservation & demo chat endpoints
@@ -118,11 +121,9 @@ function validateNewReservationPayload(
   if (!customerPhone || !isValidPhone(customerPhone)) {
     return { error: 'customer_phone must contain 7 to 15 digits.' };
   }
-  if (!isValidDateStr(reservationDate)) {
-    return { error: 'reservation_date must be YYYY-MM-DD.' };
-  }
-  if (!reservationTime) {
-    return { error: 'reservation_time is required.' };
+  const dtValidation = validateReservationDateTimeKarachi(reservationDate, reservationTime);
+  if (!dtValidation.ok) {
+    return { error: dtValidation.error };
   }
   if (!Number.isInteger(guestCount) || guestCount < 1 || guestCount > 500) {
     return { error: 'guest_count must be an integer between 1 and 500.' };
@@ -241,6 +242,16 @@ async function runExplicitSimulatedDemoReply(
   if (!state.name || !state.phone) {
     return {
       reply: `[Simulated Demo] Noted: ${state.guests} guests on ${state.date} at ${state.time} (${state.seating || 'no seating preference'}). To log this Pending demo reservation for manager review, please share a fictional guest name and synthetic contact number (e.g. "Ali Demo, +92 300 0000999").`,
+    };
+  }
+
+  const simDateTimeCheck = validateReservationDateTimeKarachi(state.date, state.time);
+  if (!simDateTimeCheck.ok) {
+    state.date = undefined;
+    state.time = undefined;
+    simulatedSessions.set(sessionId, state);
+    return {
+      reply: `[Simulated Demo] ${simDateTimeCheck.error} Please choose today's upcoming slots or a future date in Pakistan time.`,
     };
   }
 
@@ -948,39 +959,101 @@ export function registerManagementApiRoutes(app: Express) {
     }
   });
 
-  app.patch('/api/demo/reservations/:id', async (req, res) => {
+  async function handleReservationPatch(
+    req: Request,
+    res: Response,
+    isDemo: boolean,
+    actor: string
+  ) {
     const body = (req.body || {}) as Record<string, unknown>;
-    if (body.status !== undefined && !VALID_STATUSES.includes(String(body.status) as ReservationStatus)) {
-      res.status(400).json({ ok: false, message: 'Invalid reservation status.' });
+    if (
+      body.status !== undefined &&
+      !VALID_STATUSES.includes(String(body.status) as ReservationStatus)
+    ) {
+      formatValidationError(res, 'Invalid reservation status.');
       return;
     }
     if (
       body.seatingPreference !== undefined &&
       !VALID_SEATING.includes(String(body.seatingPreference) as ManagementSeating)
     ) {
-      res.status(400).json({ ok: false, message: 'Invalid seating preference.' });
+      formatValidationError(res, 'Invalid seating preference.');
       return;
     }
     if (body.guestCount !== undefined) {
       const gc = Number(body.guestCount);
       if (!Number.isInteger(gc) || gc < 1 || gc > 500) {
-        res.status(400).json({ ok: false, message: 'Guest count must be between 1 and 500.' });
+        formatValidationError(res, 'Guest count must be an integer between 1 and 500.');
         return;
       }
     }
 
+    const rawDate =
+      body.reservationDate !== undefined ? body.reservationDate : body.reservation_date;
+    const rawTime =
+      body.reservationTime !== undefined ? body.reservationTime : body.reservation_time;
+
+    let normalizedDate: string | undefined;
+    if (rawDate !== undefined) {
+      if (typeof rawDate !== 'string' || !isValidCalendarDateStr(rawDate.trim())) {
+        formatValidationError(
+          res,
+          'reservation_date must be a valid calendar date in YYYY-MM-DD format.'
+        );
+        return;
+      }
+      normalizedDate = rawDate.trim();
+    }
+
+    let normalizedTime: string | undefined;
+    if (rawTime !== undefined) {
+      if (typeof rawTime !== 'string' || !rawTime.trim()) {
+        formatValidationError(res, 'reservation_time must be a non-empty time string.');
+        return;
+      }
+      const parsedTime = parseReservationTimeMinutes(rawTime.trim());
+      if (parsedTime.status !== 'valid') {
+        formatValidationError(res, parsedTime.error);
+        return;
+      }
+      normalizedTime = rawTime.trim().slice(0, 60);
+    }
+
+    const reservationId = String(req.params.id);
     try {
-      const updated = await repository.updateReservation(String(req.params.id), true, {
+      const existing = await repository.getReservationById(reservationId, isDemo);
+      if (!existing) {
+        res.status(404).json({
+          ok: false,
+          message: isDemo
+            ? 'Reservation not found in demo workspace.'
+            : 'Production reservation not found.',
+        });
+        return;
+      }
+
+      const isReschedulingDate =
+        normalizedDate !== undefined && normalizedDate !== existing.reservationDate;
+      const isReschedulingTime =
+        normalizedTime !== undefined && normalizedTime !== existing.reservationTime;
+
+      if (isReschedulingDate || isReschedulingTime) {
+        const effectiveDate = normalizedDate ?? existing.reservationDate;
+        const effectiveTime = normalizedTime ?? existing.reservationTime;
+        const dtCheck = validateReservationDateTimeKarachi(effectiveDate, effectiveTime);
+        if (!dtCheck.ok) {
+          formatValidationError(res, dtCheck.error);
+          return;
+        }
+      }
+
+      const updated = await repository.updateReservation(reservationId, isDemo, {
         customerName: typeof body.customerName === 'string' ? body.customerName : undefined,
         customerPhone: typeof body.customerPhone === 'string' ? body.customerPhone : undefined,
         customerEmail: typeof body.customerEmail === 'string' ? body.customerEmail : undefined,
         guestCity: typeof body.guestCity === 'string' ? body.guestCity : undefined,
-        reservationDate:
-          typeof body.reservationDate === 'string' && isValidDateStr(body.reservationDate)
-            ? body.reservationDate
-            : undefined,
-        reservationTime:
-          typeof body.reservationTime === 'string' ? body.reservationTime : undefined,
+        reservationDate: normalizedDate,
+        reservationTime: normalizedTime,
         guestCount: body.guestCount !== undefined ? Number(body.guestCount) : undefined,
         seatingPreference: body.seatingPreference as ManagementSeating | undefined,
         specialOccasion:
@@ -992,11 +1065,16 @@ export function registerManagementApiRoutes(app: Express) {
         status: body.status as ReservationStatus | undefined,
         managerNotes: typeof body.managerNotes === 'string' ? body.managerNotes : undefined,
         actionNote: typeof body.actionNote === 'string' ? body.actionNote : undefined,
-        actor: 'Demo Manager',
+        actor,
       });
 
       if (!updated) {
-        res.status(404).json({ ok: false, message: 'Reservation not found in demo workspace.' });
+        res.status(404).json({
+          ok: false,
+          message: isDemo
+            ? 'Reservation not found in demo workspace.'
+            : 'Production reservation not found.',
+        });
         return;
       }
       res.json({ ok: true, reservation: updated });
@@ -1004,9 +1082,18 @@ export function registerManagementApiRoutes(app: Express) {
       res.status(500).json({
         ok: false,
         error: 'persistence_error',
-        message: err instanceof Error ? err.message : 'Could not update reservation.',
+        message:
+          err instanceof Error
+            ? err.message
+            : isDemo
+              ? 'Could not update reservation.'
+              : 'Could not update production reservation.',
       });
     }
+  }
+
+  app.patch('/api/demo/reservations/:id', async (req, res) => {
+    await handleReservationPatch(req, res, true, 'Demo Manager');
   });
 
   app.post('/api/demo/reservations/:id/retry-notification', async (req, res) => {
@@ -1131,7 +1218,7 @@ export function registerManagementApiRoutes(app: Express) {
           capacityIsSample:
             typeof body.capacityIsSample === 'boolean' ? body.capacityIsSample : undefined,
           closureDates: Array.isArray(body.closureDates)
-            ? body.closureDates.map(String).filter(isValidDateStr)
+            ? body.closureDates.map(String).filter(isValidCalendarDateStr)
             : undefined,
           requireManagerApproval:
             typeof body.requireManagerApproval === 'boolean'
@@ -1227,32 +1314,6 @@ export function registerManagementApiRoutes(app: Express) {
   });
 
   app.patch('/api/admin/reservations/:id', requireManagerAuth, async (req, res) => {
-    const body = (req.body || {}) as Record<string, unknown>;
-    try {
-      const updated = await repository.updateReservation(String(req.params.id), false, {
-        status: VALID_STATUSES.includes(String(body.status) as ReservationStatus)
-          ? (String(body.status) as ReservationStatus)
-          : undefined,
-        managerNotes: typeof body.managerNotes === 'string' ? body.managerNotes : undefined,
-        reservationDate:
-          typeof body.reservationDate === 'string' && isValidDateStr(body.reservationDate)
-            ? body.reservationDate
-            : undefined,
-        reservationTime:
-          typeof body.reservationTime === 'string' ? body.reservationTime : undefined,
-        actor: 'Production Manager',
-      });
-      if (!updated) {
-        res.status(404).json({ ok: false, message: 'Production reservation not found.' });
-        return;
-      }
-      res.json({ ok: true, reservation: updated });
-    } catch (err) {
-      res.status(500).json({
-        ok: false,
-        error: 'persistence_error',
-        message: err instanceof Error ? err.message : 'Could not update production reservation.',
-      });
-    }
+    await handleReservationPatch(req, res, false, 'Production Manager');
   });
 }
