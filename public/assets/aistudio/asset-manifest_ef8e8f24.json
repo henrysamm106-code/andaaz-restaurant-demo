@@ -1,0 +1,907 @@
+[
+  {
+    "src": "https://framerusercontent.com/images/7vAHFkZnqx0XEIoxey4s7mGzQ.jpg?width=1399&height=1604",
+    "srcset": "https://framerusercontent.com/images/7vAHFkZnqx0XEIoxey4s7mGzQ.jpg?scale-down-to=1024&width=1399&height=1604 893w,https://framerusercontent.com/images/7vAHFkZnqx0XEIoxey4s7mGzQ.jpg?width=1399&height=1604 1399w",
+    "alt": "",
+    "width": "1399",
+    "height": "1604",
+    "source_pages": [
+      "https://andaazrestaurant.com/",
+      "https://andaazrestaurant.com/reservation-page",
+      "https://andaazrestaurant.com/andaaz-menu",
+      "https://andaazrestaurant.com/hosted-evenings",
+      "https://andaazrestaurant.com/restaurant-in-walled-city-lahore",
+      "https://andaazrestaurant.com/breakfast-brunch",
+      "https://andaazrestaurant.com/corporate-hosting",
+      "https://andaazrestaurant.com/dinner-with-music",
+      "https://andaazrestaurant.com/shining-moments",
+      "https://andaazrestaurant.com/wedding-gatherings",
+      "https://andaazrestaurant.com/anniversary-dinner-lahore"
+    ],
+    "id": "logo-original",
+    "local_path": "assets/originals/logo-original.jpg",
+    "downloaded": true,
+    "actual_width": 1399,
+    "actual_height": 1604,
+    "bytes": 113754,
+    "sha256": "755b53b1e0f29c69de12f0fc9025cc138c500f231faf3381d56263d15dd3c51c"
+  },
+  {
+    "src": "https://framerusercontent.com/images/oGF5kaFNXsLPDvyQGvBzUuGhH64.jpg?width=2400&height=1600",
+    "srcset": "https://framerusercontent.com/images/oGF5kaFNXsLPDvyQGvBzUuGhH64.jpg?scale-down-to=512&width=2400&height=1600 512w,https://framerusercontent.com/images/oGF5kaFNXsLPDvyQGvBzUuGhH64.jpg?scale-down-to=1024&width=2400&height=1600 1024w,https://framerusercontent.com/images/oGF5kaFNXsLPDvyQGvBzUuGhH64.jpg?scale-down-to=2048&width=2400&height=1600 2048w,https://framerusercontent.com/images/oGF5kaFNXsLPDvyQGvBzUuGhH64.jpg?width=2400&height=1600 2400w",
+    "alt": "Rooftop dining table at Andaaz Restaurant overlooking Badshahi Masjid in Lahore.",
+    "width": "2400",
+    "height": "1600",
+    "source_pages": [
+      "https://andaazrestaurant.com/"
+    ],
+    "id": "rooftop-table-landscape",
+    "local_path": "assets/originals/rooftop-table-landscape.jpg",
+    "downloaded": true,
+    "actual_width": 2400,
+    "actual_height": 1600,
+    "bytes": 341683,
+    "sha256": "7e4c59b682f651e82214708bdf33cc86f1cd1c8b6718805c2b9b1c0201ea50d2"
+  },
+  {
+    "src": "https://framerusercontent.com/images/4LCiJDj7OpIfNSCqe6wIW3zV9aY.jpg?width=626&height=1080",
+    "srcset": "https://framerusercontent.com/images/4LCiJDj7OpIfNSCqe6wIW3zV9aY.jpg?scale-down-to=1024&width=626&height=1080 593w,https://framerusercontent.com/images/4LCiJDj7OpIfNSCqe6wIW3zV9aY.jpg?width=626&height=1080 626w",
+    "alt": "Rooftop dining table at Andaaz Restaurant overlooking Badshahi Masjid in Lahore.",
+    "width": "626",
+    "height": "1080",
+    "source_pages": [
+      "https://andaazrestaurant.com/"
+    ],
+    "id": "rooftop-table-portrait",
+    "local_path": "assets/originals/rooftop-table-portrait.jpg",
+    "downloaded": true,
+    "actual_width": 626,
+    "actual_height": 1080,
+    "bytes": 206135,
+    "sha256": "331e801638b341efcf4f74c7f486ffb11596b6b9126f20fc554be1e058fb0a68"
+  },
+  {
+    "src": "https://framerusercontent.com/images/0G8eEWLIwWNxGLDHSGOCtpItCt0.jpg?width=4528&height=3016",
+    "srcset": "https://framerusercontent.com/images/0G8eEWLIwWNxGLDHSGOCtpItCt0.jpg?scale-down-to=512&width=4528&height=3016 512w,https://framerusercontent.com/images/0G8eEWLIwWNxGLDHSGOCtpItCt0.jpg?scale-down-to=1024&width=4528&height=3016 1024w,https://framerusercontent.com/images/0G8eEWLIwWNxGLDHSGOCtpItCt0.jpg?scale-down-to=2048&width=4528&height=3016 2048w,https://framerusercontent.com/images/0G8eEWLIwWNxGLDHSGOCtpItCt0.jpg?scale-down-to=4096&width=4528&height=3016 4096w,https://framerusercontent.com/images/0G8eEWLIwWNxGLDHSGOCtpItCt0.jpg?width=4528&height=3016 4528w",
+    "alt": "Rooftop table at Andaaz Restaurant with a view of Badshahi Masjid in Lahore.",
+    "width": "4528",
+    "height": "3016",
+    "source_pages": [
+      "https://andaazrestaurant.com/"
+    ],
+    "id": "dining-table-landscape",
+    "local_path": "assets/originals/dining-table-landscape.jpg",
+    "downloaded": true,
+    "actual_width": 4528,
+    "actual_height": 3016,
+    "bytes": 1301090,
+    "sha256": "0f8ba0c9a25b725c4bafbf90683b78b19ed02bc990e9c1946d7fea68e80923f2"
+  },
+  {
+    "src": "https://framerusercontent.com/images/fE5EFszcgXt3CrEQYqlAgHWgmI.jpg?width=758&height=1172",
+    "srcset": "https://framerusercontent.com/images/fE5EFszcgXt3CrEQYqlAgHWgmI.jpg?scale-down-to=1024&width=758&height=1172 662w,https://framerusercontent.com/images/fE5EFszcgXt3CrEQYqlAgHWgmI.jpg?width=758&height=1172 758w",
+    "alt": "Rooftop table at Andaaz Restaurant with a view of Badshahi Masjid in Lahore.",
+    "width": "758",
+    "height": "1172",
+    "source_pages": [
+      "https://andaazrestaurant.com/"
+    ],
+    "id": "dining-table-portrait",
+    "local_path": "assets/originals/dining-table-portrait.jpg",
+    "downloaded": true,
+    "actual_width": 758,
+    "actual_height": 1172,
+    "bytes": 161977,
+    "sha256": "41324a7c7e9bc2f9be6860b4c26ad856ecebcd47a40fa8c3520a516e56d84453"
+  },
+  {
+    "src": "https://framerusercontent.com/images/9imOevMqKHxI5dLVgF9d0RQkeY8.jpg?width=8256&height=5504",
+    "srcset": "https://framerusercontent.com/images/9imOevMqKHxI5dLVgF9d0RQkeY8.jpg?scale-down-to=512&width=8256&height=5504 512w,https://framerusercontent.com/images/9imOevMqKHxI5dLVgF9d0RQkeY8.jpg?scale-down-to=1024&width=8256&height=5504 1024w,https://framerusercontent.com/images/9imOevMqKHxI5dLVgF9d0RQkeY8.jpg?scale-down-to=2048&width=8256&height=5504 2048w,https://framerusercontent.com/images/9imOevMqKHxI5dLVgF9d0RQkeY8.jpg?scale-down-to=4096&width=8256&height=5504 4096w,https://framerusercontent.com/images/9imOevMqKHxI5dLVgF9d0RQkeY8.jpg?width=8256&height=5504 8256w",
+    "alt": "Dining room at Andaaz Restaurant overlooking Lahore’s Walled City.",
+    "width": "8256",
+    "height": "5504",
+    "source_pages": [
+      "https://andaazrestaurant.com/"
+    ],
+    "id": "dining-room-landscape",
+    "local_path": "assets/originals/dining-room-landscape.jpg",
+    "downloaded": true,
+    "actual_width": 8256,
+    "actual_height": 5504,
+    "bytes": 3794644,
+    "sha256": "e69f6f6e142bbbd5031f7b456af69e18de9ee4b02e6d5b42373feee37994a15b"
+  },
+  {
+    "src": "https://framerusercontent.com/images/aICYX2Ex61syRcyO70tyd6DWg.jpg?width=1080&height=1350",
+    "srcset": "https://framerusercontent.com/images/aICYX2Ex61syRcyO70tyd6DWg.jpg?scale-down-to=1024&width=1080&height=1350 819w,https://framerusercontent.com/images/aICYX2Ex61syRcyO70tyd6DWg.jpg?width=1080&height=1350 1080w",
+    "alt": "Dining room at Andaaz Restaurant overlooking Lahore’s Walled City.",
+    "width": "1080",
+    "height": "1350",
+    "source_pages": [
+      "https://andaazrestaurant.com/"
+    ],
+    "id": "dining-room-portrait",
+    "local_path": "assets/originals/dining-room-portrait.jpg",
+    "downloaded": true,
+    "actual_width": 1080,
+    "actual_height": 1350,
+    "bytes": 343775,
+    "sha256": "4f5bdb37cc5355f12398f630d9d8fa7a9d3393ea957dce4dd9f3fc034765645b"
+  },
+  {
+    "src": "https://framerusercontent.com/images/BpHAtGoiA5P8f74czrtc5WHNT84.jpg?width=2880&height=1620",
+    "srcset": "https://framerusercontent.com/images/BpHAtGoiA5P8f74czrtc5WHNT84.jpg?scale-down-to=512&width=2880&height=1620 512w,https://framerusercontent.com/images/BpHAtGoiA5P8f74czrtc5WHNT84.jpg?scale-down-to=1024&width=2880&height=1620 1024w,https://framerusercontent.com/images/BpHAtGoiA5P8f74czrtc5WHNT84.jpg?scale-down-to=2048&width=2880&height=1620 2048w,https://framerusercontent.com/images/BpHAtGoiA5P8f74czrtc5WHNT84.jpg?width=2880&height=1620 2880w",
+    "alt": "Night view of Badshahi Masjid from Andaaz Restaurant in Lahore.",
+    "width": "2880",
+    "height": "1620",
+    "source_pages": [
+      "https://andaazrestaurant.com/"
+    ],
+    "id": "mosque-night-landscape",
+    "local_path": "assets/originals/mosque-night-landscape.jpg",
+    "downloaded": true,
+    "actual_width": 2880,
+    "actual_height": 1620,
+    "bytes": 513901,
+    "sha256": "f6e39fe75ed47c142a86b85e4b0c52e48e43fceaafa99154fb87e4362bdc7258"
+  },
+  {
+    "src": "https://framerusercontent.com/images/NWxnuB8INCBA7FXlaliVrzzo.jpg?width=1080&height=1350",
+    "srcset": "https://framerusercontent.com/images/NWxnuB8INCBA7FXlaliVrzzo.jpg?scale-down-to=1024&width=1080&height=1350 819w,https://framerusercontent.com/images/NWxnuB8INCBA7FXlaliVrzzo.jpg?width=1080&height=1350 1080w",
+    "alt": "Night view of Badshahi Masjid from Andaaz Restaurant in Lahore.",
+    "width": "1080",
+    "height": "1350",
+    "source_pages": [
+      "https://andaazrestaurant.com/"
+    ],
+    "id": "mosque-night-portrait",
+    "local_path": "assets/originals/mosque-night-portrait.jpg",
+    "downloaded": true,
+    "actual_width": 1080,
+    "actual_height": 1350,
+    "bytes": 146944,
+    "sha256": "9bf8cfcb69ef24ddf011ea9cf3d87646531bb164b20829db4c525a60ed1bcfc4"
+  },
+  {
+    "src": "https://framerusercontent.com/images/PCWKeROCZvowAy9MTFBXJTRvXE.jpg?width=2240&height=1120",
+    "srcset": "https://framerusercontent.com/images/PCWKeROCZvowAy9MTFBXJTRvXE.jpg?scale-down-to=512&width=2240&height=1120 512w,https://framerusercontent.com/images/PCWKeROCZvowAy9MTFBXJTRvXE.jpg?scale-down-to=1024&width=2240&height=1120 1024w,https://framerusercontent.com/images/PCWKeROCZvowAy9MTFBXJTRvXE.jpg?scale-down-to=2048&width=2240&height=1120 2048w,https://framerusercontent.com/images/PCWKeROCZvowAy9MTFBXJTRvXE.jpg?width=2240&height=1120 2240w",
+    "alt": "Hosted rooftop dinner at Andaaz Restaurant in Lahore’s Walled City.",
+    "width": "2240",
+    "height": "1120",
+    "source_pages": [
+      "https://andaazrestaurant.com/hosted-evenings"
+    ],
+    "id": "hosted-rooftop-panorama",
+    "local_path": "assets/originals/hosted-rooftop-panorama.jpg",
+    "downloaded": true,
+    "actual_width": 2240,
+    "actual_height": 1120,
+    "bytes": 500322,
+    "sha256": "c06ad981abfc170e19e4db7845bd4c3856bed571df078bf27fa272040586f45d"
+  },
+  {
+    "src": "https://framerusercontent.com/images/UUPLoTwNwkLUFR2YXiBztVEQWO0.jpg?width=1800&height=1200",
+    "srcset": "https://framerusercontent.com/images/UUPLoTwNwkLUFR2YXiBztVEQWO0.jpg?scale-down-to=512&width=1800&height=1200 512w,https://framerusercontent.com/images/UUPLoTwNwkLUFR2YXiBztVEQWO0.jpg?scale-down-to=1024&width=1800&height=1200 1024w,https://framerusercontent.com/images/UUPLoTwNwkLUFR2YXiBztVEQWO0.jpg?width=1800&height=1200 1800w",
+    "alt": "Guests at a private hosted evening at Andaaz Restaurant Lahore.",
+    "width": "1800",
+    "height": "1200",
+    "source_pages": [
+      "https://andaazrestaurant.com/hosted-evenings"
+    ],
+    "id": "hosted-guests",
+    "local_path": "assets/originals/hosted-guests.jpg",
+    "downloaded": true,
+    "actual_width": 1800,
+    "actual_height": 1200,
+    "bytes": 439528,
+    "sha256": "679fc342f6486f3f065c8fa666f251e7dd339f1caf43b2f50d3fa27aadbfb780"
+  },
+  {
+    "src": "https://framerusercontent.com/images/dvYZrXp1eWcpajEEQ8QWrk2rAc.jpg?width=1800&height=1200",
+    "srcset": "https://framerusercontent.com/images/dvYZrXp1eWcpajEEQ8QWrk2rAc.jpg?scale-down-to=512&width=1800&height=1200 512w,https://framerusercontent.com/images/dvYZrXp1eWcpajEEQ8QWrk2rAc.jpg?scale-down-to=1024&width=1800&height=1200 1024w,https://framerusercontent.com/images/dvYZrXp1eWcpajEEQ8QWrk2rAc.jpg?width=1800&height=1200 1800w",
+    "alt": "Private dining room at Andaaz overlooking Lahore’s Walled City.",
+    "width": "1800",
+    "height": "1200",
+    "source_pages": [
+      "https://andaazrestaurant.com/hosted-evenings"
+    ],
+    "id": "private-dining-room",
+    "local_path": "assets/originals/private-dining-room.jpg",
+    "downloaded": true,
+    "actual_width": 1800,
+    "actual_height": 1200,
+    "bytes": 559315,
+    "sha256": "895159ffbceff6c755670497bc37f90ca4223d5f75461f1b5e282c83fbcf2828"
+  },
+  {
+    "src": "https://framerusercontent.com/images/9sQbL3mOBzhMvSq4Kvt3DoBoBc.jpg?width=1800&height=1200",
+    "srcset": "https://framerusercontent.com/images/9sQbL3mOBzhMvSq4Kvt3DoBoBc.jpg?scale-down-to=512&width=1800&height=1200 512w,https://framerusercontent.com/images/9sQbL3mOBzhMvSq4Kvt3DoBoBc.jpg?scale-down-to=1024&width=1800&height=1200 1024w,https://framerusercontent.com/images/9sQbL3mOBzhMvSq4Kvt3DoBoBc.jpg?width=1800&height=1200 1800w",
+    "alt": "Private family gathering on the rooftop at Andaaz Restaurant Lahore.",
+    "width": "1800",
+    "height": "1200",
+    "source_pages": [
+      "https://andaazrestaurant.com/hosted-evenings"
+    ],
+    "id": "family-rooftop-gathering",
+    "local_path": "assets/originals/family-rooftop-gathering.jpg",
+    "downloaded": true,
+    "actual_width": 1800,
+    "actual_height": 1200,
+    "bytes": 412812,
+    "sha256": "8407f751b1b602e0ffab14c55470a358ae732890035d4961cb1e04f470e5820a"
+  },
+  {
+    "src": "https://framerusercontent.com/images/Za6ddaYf8Ewy7Xof3ktENf7ExX4.jpg?width=1440&height=1800",
+    "srcset": "https://framerusercontent.com/images/Za6ddaYf8Ewy7Xof3ktENf7ExX4.jpg?scale-down-to=1024&width=1440&height=1800 819w,https://framerusercontent.com/images/Za6ddaYf8Ewy7Xof3ktENf7ExX4.jpg?width=1440&height=1800 1440w",
+    "alt": "Cultural evening at Andaaz with a view of Badshahi Masjid in Lahore.",
+    "width": "1440",
+    "height": "1800",
+    "source_pages": [
+      "https://andaazrestaurant.com/hosted-evenings"
+    ],
+    "id": "cultural-evening-portrait",
+    "local_path": "assets/originals/cultural-evening-portrait.jpg",
+    "downloaded": true,
+    "actual_width": 1440,
+    "actual_height": 1800,
+    "bytes": 480462,
+    "sha256": "c6d6a2c03d006285eb9438353036f01cf887dcbc5a4060ceabc2fc551a2d36e1"
+  },
+  {
+    "src": "https://framerusercontent.com/images/FafsvOx6CbXxx8JHfWpuFTTxE.jpg?width=2240&height=1120",
+    "srcset": "https://framerusercontent.com/images/FafsvOx6CbXxx8JHfWpuFTTxE.jpg?scale-down-to=512&width=2240&height=1120 512w,https://framerusercontent.com/images/FafsvOx6CbXxx8JHfWpuFTTxE.jpg?scale-down-to=1024&width=2240&height=1120 1024w,https://framerusercontent.com/images/FafsvOx6CbXxx8JHfWpuFTTxE.jpg?scale-down-to=2048&width=2240&height=1120 2048w,https://framerusercontent.com/images/FafsvOx6CbXxx8JHfWpuFTTxE.jpg?width=2240&height=1120 2240w",
+    "alt": "View of Badshahi Masjid and Lahore’s Walled City from Andaaz Restaurant.",
+    "width": "2240",
+    "height": "1120",
+    "source_pages": [
+      "https://andaazrestaurant.com/restaurant-in-walled-city-lahore"
+    ],
+    "id": "walled-city-panorama",
+    "local_path": "assets/originals/walled-city-panorama.jpg",
+    "downloaded": true,
+    "actual_width": 2240,
+    "actual_height": 1120,
+    "bytes": 624148,
+    "sha256": "f1df9cd3e743b83f7894665348171377f59f35b042221e201b2ff616bd597c76"
+  },
+  {
+    "src": "https://framerusercontent.com/images/BxaSVPlm7E4X5a7ZmT8tVr1s.jpg?width=1440&height=1800",
+    "srcset": "https://framerusercontent.com/images/BxaSVPlm7E4X5a7ZmT8tVr1s.jpg?scale-down-to=1024&width=1440&height=1800 819w,https://framerusercontent.com/images/BxaSVPlm7E4X5a7ZmT8tVr1s.jpg?width=1440&height=1800 1440w",
+    "alt": "Street scene near Andaaz Restaurant in Lahore’s Walled City.",
+    "width": "1440",
+    "height": "1800",
+    "source_pages": [
+      "https://andaazrestaurant.com/restaurant-in-walled-city-lahore"
+    ],
+    "id": "walled-city-street",
+    "local_path": "assets/originals/walled-city-street.jpg",
+    "downloaded": true,
+    "actual_width": 1440,
+    "actual_height": 1800,
+    "bytes": 675774,
+    "sha256": "8faff4976e8237489332814cdad90f76e338d84ed6da9e64c6312f2f65280cad"
+  },
+  {
+    "src": "https://framerusercontent.com/images/XB4ngGheKJlNSono6XlUAdEQmUU.jpg?width=1440&height=1800",
+    "srcset": "https://framerusercontent.com/images/XB4ngGheKJlNSono6XlUAdEQmUU.jpg?scale-down-to=1024&width=1440&height=1800 819w,https://framerusercontent.com/images/XB4ngGheKJlNSono6XlUAdEQmUU.jpg?width=1440&height=1800 1440w",
+    "alt": "Interior detail inside The House at Andaaz Restaurant in Lahore’s Walled City.",
+    "width": "1440",
+    "height": "1800",
+    "source_pages": [
+      "https://andaazrestaurant.com/restaurant-in-walled-city-lahore"
+    ],
+    "id": "house-interior-detail",
+    "local_path": "assets/originals/house-interior-detail.jpg",
+    "downloaded": true,
+    "actual_width": 1440,
+    "actual_height": 1800,
+    "bytes": 402656,
+    "sha256": "08de2ecaa560123f834b1a27dd5205ff587e73d844d6e7bbb7b732188fd76637"
+  },
+  {
+    "src": "https://framerusercontent.com/images/sl3T13FahRKm9GbOFxoqPR8oHY.jpg?width=1800&height=1200",
+    "srcset": "https://framerusercontent.com/images/sl3T13FahRKm9GbOFxoqPR8oHY.jpg?scale-down-to=512&width=1800&height=1200 512w,https://framerusercontent.com/images/sl3T13FahRKm9GbOFxoqPR8oHY.jpg?scale-down-to=1024&width=1800&height=1200 1024w,https://framerusercontent.com/images/sl3T13FahRKm9GbOFxoqPR8oHY.jpg?width=1800&height=1200 1800w",
+    "alt": "Rooftop dining at Andaaz Restaurant on Fort Road in Lahore.",
+    "width": "1800",
+    "height": "1200",
+    "source_pages": [
+      "https://andaazrestaurant.com/restaurant-in-walled-city-lahore"
+    ],
+    "id": "rooftop-dining-landscape",
+    "local_path": "assets/originals/rooftop-dining-landscape.jpg",
+    "downloaded": true,
+    "actual_width": 1800,
+    "actual_height": 1200,
+    "bytes": 427743,
+    "sha256": "4eccbc8c7c54d7a921faad69ae50cf4ecfd3cae4083e8564b866051c431d0af8"
+  },
+  {
+    "src": "https://framerusercontent.com/images/CkO0YZo9eMGeLY1eB6nqn2TvnY.jpg?width=1080&height=1350",
+    "srcset": "https://framerusercontent.com/images/CkO0YZo9eMGeLY1eB6nqn2TvnY.jpg?scale-down-to=1024&width=1080&height=1350 819w,https://framerusercontent.com/images/CkO0YZo9eMGeLY1eB6nqn2TvnY.jpg?width=1080&height=1350 1080w",
+    "alt": "Rooftop dining at Andaaz Restaurant on Fort Road in Lahore.",
+    "width": "1080",
+    "height": "1350",
+    "source_pages": [
+      "https://andaazrestaurant.com/restaurant-in-walled-city-lahore"
+    ],
+    "id": "rooftop-dining-portrait",
+    "local_path": "assets/originals/rooftop-dining-portrait.jpg",
+    "downloaded": true,
+    "actual_width": 1080,
+    "actual_height": 1350,
+    "bytes": 298598,
+    "sha256": "7fd3de157c5454e970630a0fd6c8d7f82e118fa0eb7273970ddd658cc6572087"
+  },
+  {
+    "src": "https://framerusercontent.com/images/o5bfUI5oeladwpeIvUB56Mih0.jpg?width=1800&height=1200",
+    "srcset": "https://framerusercontent.com/images/o5bfUI5oeladwpeIvUB56Mih0.jpg?scale-down-to=512&width=1800&height=1200 512w,https://framerusercontent.com/images/o5bfUI5oeladwpeIvUB56Mih0.jpg?scale-down-to=1024&width=1800&height=1200 1024w,https://framerusercontent.com/images/o5bfUI5oeladwpeIvUB56Mih0.jpg?width=1800&height=1200 1800w",
+    "alt": "Evening view of The House at Andaaz Restaurant on Fort Road Lahore.",
+    "width": "1800",
+    "height": "1200",
+    "source_pages": [
+      "https://andaazrestaurant.com/restaurant-in-walled-city-lahore"
+    ],
+    "id": "house-evening-landscape",
+    "local_path": "assets/originals/house-evening-landscape.jpg",
+    "downloaded": true,
+    "actual_width": 1800,
+    "actual_height": 1200,
+    "bytes": 389701,
+    "sha256": "38d9caf108d110dea8452d7558b7e3116962ab392c470f47ddc955eaac800c4d"
+  },
+  {
+    "src": "https://framerusercontent.com/images/TxBu9F3n5RxWMQRaux3wpvqsyS8.jpg?width=1080&height=1350",
+    "srcset": "https://framerusercontent.com/images/TxBu9F3n5RxWMQRaux3wpvqsyS8.jpg?scale-down-to=1024&width=1080&height=1350 819w,https://framerusercontent.com/images/TxBu9F3n5RxWMQRaux3wpvqsyS8.jpg?width=1080&height=1350 1080w",
+    "alt": "Evening view of The House at Andaaz Restaurant on Fort Road Lahore.",
+    "width": "1080",
+    "height": "1350",
+    "source_pages": [
+      "https://andaazrestaurant.com/restaurant-in-walled-city-lahore"
+    ],
+    "id": "house-evening-portrait",
+    "local_path": "assets/originals/house-evening-portrait.jpg",
+    "downloaded": true,
+    "actual_width": 1080,
+    "actual_height": 1350,
+    "bytes": 234722,
+    "sha256": "be7b5fc34f6bc219bdaba9e46ae6671aa0ae6bf8ab57f2b8177e116dfb3a0be9"
+  },
+  {
+    "id": "favicon-original",
+    "src": "https://framerusercontent.com/images/F0qupH4MIMgjHMSn4YDZcO6y3k.png",
+    "source_pages": [
+      "https://andaazrestaurant.com/"
+    ],
+    "local_path": "assets/originals/favicon-original.png",
+    "downloaded": true,
+    "actual_width": 64,
+    "actual_height": 64,
+    "bytes": 1199,
+    "alt": "Original Andaaz website icon",
+    "mode": "P"
+  },
+  {
+    "id": "apple-touch-icon-original",
+    "src": "https://framerusercontent.com/images/a40RYFTUFJy8J9uyXjDx555MdA.png",
+    "source_pages": [
+      "https://andaazrestaurant.com/"
+    ],
+    "local_path": "assets/originals/apple-touch-icon-original.png",
+    "downloaded": true,
+    "actual_width": 180,
+    "actual_height": 180,
+    "bytes": 3776,
+    "alt": "Original Andaaz website icon",
+    "mode": "P"
+  },
+  {
+    "src": "https://framerusercontent.com/images/Q2W5NzcqL4vBlo6QvJjnQphtuEA.jpg?width=8217&height=5478",
+    "srcset": "https://framerusercontent.com/images/Q2W5NzcqL4vBlo6QvJjnQphtuEA.jpg?scale-down-to=512&width=8217&height=5478 512w,https://framerusercontent.com/images/Q2W5NzcqL4vBlo6QvJjnQphtuEA.jpg?scale-down-to=1024&width=8217&height=5478 1024w,https://framerusercontent.com/images/Q2W5NzcqL4vBlo6QvJjnQphtuEA.jpg?scale-down-to=2048&width=8217&height=5478 2048w,https://framerusercontent.com/images/Q2W5NzcqL4vBlo6QvJjnQphtuEA.jpg?scale-down-to=4096&width=8217&height=5478 4096w,https://framerusercontent.com/images/Q2W5NzcqL4vBlo6QvJjnQphtuEA.jpg?width=8217&height=5478 8217w",
+    "alt": "Breakfast and Brunch",
+    "width": "8217",
+    "height": "5478",
+    "id": "breakfast-brunch-1",
+    "source_pages": [
+      "https://andaazrestaurant.com/breakfast-brunch"
+    ],
+    "local_path": "assets/originals/breakfast-brunch-1.jpg",
+    "actual_width": 8217,
+    "actual_height": 5478,
+    "bytes": 2966774,
+    "sha256": "3a0d8bfeba43c8c7308952cb5d383701e7d4a7714c7dbab5d24b6f7ede1c94c8",
+    "downloaded": true
+  },
+  {
+    "src": "https://framerusercontent.com/images/Vba4F050DRHhvKxiNDWQq6FcUc.jpg?width=4928&height=3419",
+    "srcset": "https://framerusercontent.com/images/Vba4F050DRHhvKxiNDWQq6FcUc.jpg?scale-down-to=512&width=4928&height=3419 512w,https://framerusercontent.com/images/Vba4F050DRHhvKxiNDWQq6FcUc.jpg?scale-down-to=1024&width=4928&height=3419 1024w,https://framerusercontent.com/images/Vba4F050DRHhvKxiNDWQq6FcUc.jpg?scale-down-to=2048&width=4928&height=3419 2048w,https://framerusercontent.com/images/Vba4F050DRHhvKxiNDWQq6FcUc.jpg?scale-down-to=4096&width=4928&height=3419 4096w,https://framerusercontent.com/images/Vba4F050DRHhvKxiNDWQq6FcUc.jpg?width=4928&height=3419 4928w",
+    "alt": "Breakfast and Brunch",
+    "width": "4928",
+    "height": "3419",
+    "id": "breakfast-brunch-4",
+    "source_pages": [
+      "https://andaazrestaurant.com/breakfast-brunch"
+    ],
+    "local_path": "assets/originals/breakfast-brunch-4.jpg",
+    "actual_width": 4928,
+    "actual_height": 3419,
+    "bytes": 6215054,
+    "sha256": "790fbaaaa9a05d0398499bf22d68a3d46e1ebe60c84959e6bf737b25f08f1856",
+    "downloaded": true
+  },
+  {
+    "src": "https://framerusercontent.com/images/uspt4oTbNRHEbq9wMTPtH3Mjl0.png?width=1080&height=1350",
+    "srcset": "https://framerusercontent.com/images/uspt4oTbNRHEbq9wMTPtH3Mjl0.png?scale-down-to=1024&width=1080&height=1350 819w,https://framerusercontent.com/images/uspt4oTbNRHEbq9wMTPtH3Mjl0.png?width=1080&height=1350 1080w",
+    "alt": "Breakfast and Brunch",
+    "width": "1080",
+    "height": "1350",
+    "id": "breakfast-brunch-7",
+    "source_pages": [
+      "https://andaazrestaurant.com/breakfast-brunch"
+    ],
+    "local_path": "assets/originals/breakfast-brunch-7.jpg",
+    "actual_width": 1080,
+    "actual_height": 1350,
+    "bytes": 573069,
+    "sha256": "e38dcfdc03b7c478fb5ac25428351a993fe5c6aa59695be849742df373556cd8",
+    "downloaded": true
+  },
+  {
+    "src": "https://framerusercontent.com/images/Ue0JQYnFtjryR6MwfkARM5hs.jpg?width=5760&height=3840",
+    "srcset": "https://framerusercontent.com/images/Ue0JQYnFtjryR6MwfkARM5hs.jpg?scale-down-to=512&width=5760&height=3840 512w,https://framerusercontent.com/images/Ue0JQYnFtjryR6MwfkARM5hs.jpg?scale-down-to=1024&width=5760&height=3840 1024w,https://framerusercontent.com/images/Ue0JQYnFtjryR6MwfkARM5hs.jpg?scale-down-to=2048&width=5760&height=3840 2048w,https://framerusercontent.com/images/Ue0JQYnFtjryR6MwfkARM5hs.jpg?scale-down-to=4096&width=5760&height=3840 4096w,https://framerusercontent.com/images/Ue0JQYnFtjryR6MwfkARM5hs.jpg?width=5760&height=3840 5760w",
+    "alt": "Breakfast and Brunch",
+    "width": "5760",
+    "height": "3840",
+    "id": "corporate-hosting-1",
+    "source_pages": [
+      "https://andaazrestaurant.com/corporate-hosting"
+    ],
+    "local_path": "assets/originals/corporate-hosting-1.jpg",
+    "actual_width": 5760,
+    "actual_height": 3840,
+    "bytes": 3282215,
+    "sha256": "ccc096089e7da6a57a7e2f4a3853a614ccb8b514838c16cacd35e4dcbadb2de9",
+    "downloaded": true
+  },
+  {
+    "src": "https://framerusercontent.com/images/pok9Hj2MIlPIJg7zETFhzOJoNOg.png?width=1200&height=900",
+    "srcset": "https://framerusercontent.com/images/pok9Hj2MIlPIJg7zETFhzOJoNOg.png?scale-down-to=512&width=1200&height=900 512w,https://framerusercontent.com/images/pok9Hj2MIlPIJg7zETFhzOJoNOg.png?scale-down-to=1024&width=1200&height=900 1024w,https://framerusercontent.com/images/pok9Hj2MIlPIJg7zETFhzOJoNOg.png?width=1200&height=900 1200w",
+    "alt": "Breakfast and Brunch",
+    "width": "1200",
+    "height": "900",
+    "id": "corporate-hosting-4",
+    "source_pages": [
+      "https://andaazrestaurant.com/corporate-hosting"
+    ],
+    "local_path": "assets/originals/corporate-hosting-4.jpg",
+    "actual_width": 1200,
+    "actual_height": 900,
+    "bytes": 617460,
+    "sha256": "833bc5711ab4d6e728fa15666bbef7435e60bc5d6e2c1eb0e040ed02c2b63883",
+    "downloaded": true
+  },
+  {
+    "src": "https://framerusercontent.com/images/l33dw5whUQ8llvhmLkM7gH1a4M.png?width=1200&height=900",
+    "srcset": "https://framerusercontent.com/images/l33dw5whUQ8llvhmLkM7gH1a4M.png?scale-down-to=512&width=1200&height=900 512w,https://framerusercontent.com/images/l33dw5whUQ8llvhmLkM7gH1a4M.png?scale-down-to=1024&width=1200&height=900 1024w,https://framerusercontent.com/images/l33dw5whUQ8llvhmLkM7gH1a4M.png?width=1200&height=900 1200w",
+    "alt": "Breakfast and Brunch",
+    "width": "1200",
+    "height": "900",
+    "id": "corporate-hosting-7",
+    "source_pages": [
+      "https://andaazrestaurant.com/corporate-hosting"
+    ],
+    "local_path": "assets/originals/corporate-hosting-7.jpg",
+    "actual_width": 1200,
+    "actual_height": 900,
+    "bytes": 451944,
+    "sha256": "98db1cec44e125d49e6252b8d399878e2c26dd4cba188d7ceec1bc15cc97c9c5",
+    "downloaded": true
+  },
+  {
+    "src": "https://framerusercontent.com/images/Q53UhJZN3smZnpe0vxvHDbhrDQY.png?width=5760&height=3840",
+    "srcset": "https://framerusercontent.com/images/Q53UhJZN3smZnpe0vxvHDbhrDQY.png?scale-down-to=512&width=5760&height=3840 512w,https://framerusercontent.com/images/Q53UhJZN3smZnpe0vxvHDbhrDQY.png?scale-down-to=1024&width=5760&height=3840 1024w,https://framerusercontent.com/images/Q53UhJZN3smZnpe0vxvHDbhrDQY.png?scale-down-to=2048&width=5760&height=3840 2048w,https://framerusercontent.com/images/Q53UhJZN3smZnpe0vxvHDbhrDQY.png?scale-down-to=4096&width=5760&height=3840 4096w,https://framerusercontent.com/images/Q53UhJZN3smZnpe0vxvHDbhrDQY.png?width=5760&height=3840 5760w",
+    "alt": "Breakfast and Brunch",
+    "width": "5760",
+    "height": "3840",
+    "id": "dinner-with-music-1",
+    "source_pages": [
+      "https://andaazrestaurant.com/dinner-with-music"
+    ],
+    "local_path": "assets/originals/dinner-with-music-1.jpg",
+    "actual_width": 5760,
+    "actual_height": 3840,
+    "bytes": 5935173,
+    "sha256": "0095ba7a7d7226178c2d445d6ddf4eb9b3329d18a1db363465538582382a7602",
+    "downloaded": true
+  },
+  {
+    "src": "https://framerusercontent.com/images/15If4ixEcmRgAcFw8p1rNz6i0.jpg?width=1080&height=1350",
+    "srcset": "https://framerusercontent.com/images/15If4ixEcmRgAcFw8p1rNz6i0.jpg?scale-down-to=1024&width=1080&height=1350 819w,https://framerusercontent.com/images/15If4ixEcmRgAcFw8p1rNz6i0.jpg?width=1080&height=1350 1080w",
+    "alt": "Breakfast and Brunch",
+    "width": "1080",
+    "height": "1350",
+    "id": "dinner-with-music-2",
+    "source_pages": [
+      "https://andaazrestaurant.com/dinner-with-music"
+    ],
+    "local_path": "assets/originals/dinner-with-music-2.jpg",
+    "actual_width": 1080,
+    "actual_height": 1350,
+    "bytes": 214144,
+    "sha256": "6f079a781cfc7b3fa63a903a71838357a5113d3c56f6ee3365b565be14cd3e9c",
+    "downloaded": true
+  },
+  {
+    "src": "https://framerusercontent.com/images/eduVi4G3TC4Gi9m2N7msbceidE.png?width=5760&height=3840",
+    "srcset": "https://framerusercontent.com/images/eduVi4G3TC4Gi9m2N7msbceidE.png?scale-down-to=512&width=5760&height=3840 512w,https://framerusercontent.com/images/eduVi4G3TC4Gi9m2N7msbceidE.png?scale-down-to=1024&width=5760&height=3840 1024w,https://framerusercontent.com/images/eduVi4G3TC4Gi9m2N7msbceidE.png?scale-down-to=2048&width=5760&height=3840 2048w,https://framerusercontent.com/images/eduVi4G3TC4Gi9m2N7msbceidE.png?scale-down-to=4096&width=5760&height=3840 4096w,https://framerusercontent.com/images/eduVi4G3TC4Gi9m2N7msbceidE.png?width=5760&height=3840 5760w",
+    "alt": "Breakfast and Brunch",
+    "width": "5760",
+    "height": "3840",
+    "id": "dinner-with-music-4",
+    "source_pages": [
+      "https://andaazrestaurant.com/dinner-with-music"
+    ],
+    "local_path": "assets/originals/dinner-with-music-4.jpg",
+    "actual_width": 5760,
+    "actual_height": 3840,
+    "bytes": 5130054,
+    "sha256": "91bac68a3eb227cca509758d3719c014c964c6802ac859d175ef093b254da89b",
+    "downloaded": true
+  },
+  {
+    "src": "https://framerusercontent.com/images/FZY13SvVwJTn6d2VfbnqF7Tq68.jpg?width=982&height=1200",
+    "srcset": "https://framerusercontent.com/images/FZY13SvVwJTn6d2VfbnqF7Tq68.jpg?scale-down-to=1024&width=982&height=1200 837w,https://framerusercontent.com/images/FZY13SvVwJTn6d2VfbnqF7Tq68.jpg?width=982&height=1200 982w",
+    "alt": "Breakfast and Brunch",
+    "width": "982",
+    "height": "1200",
+    "id": "dinner-with-music-5",
+    "source_pages": [
+      "https://andaazrestaurant.com/dinner-with-music"
+    ],
+    "local_path": "assets/originals/dinner-with-music-5.jpg",
+    "actual_width": 982,
+    "actual_height": 1200,
+    "bytes": 193447,
+    "sha256": "34375cf6d517814d89be4af7e3442fe0bd165e44866c059d446cfa01a1d0089a",
+    "downloaded": true
+  },
+  {
+    "src": "https://framerusercontent.com/images/7nb7uJkXqzrgpzATdYGOeOpVWns.png?width=5760&height=3840",
+    "srcset": "https://framerusercontent.com/images/7nb7uJkXqzrgpzATdYGOeOpVWns.png?scale-down-to=512&width=5760&height=3840 512w,https://framerusercontent.com/images/7nb7uJkXqzrgpzATdYGOeOpVWns.png?scale-down-to=1024&width=5760&height=3840 1024w,https://framerusercontent.com/images/7nb7uJkXqzrgpzATdYGOeOpVWns.png?scale-down-to=2048&width=5760&height=3840 2048w,https://framerusercontent.com/images/7nb7uJkXqzrgpzATdYGOeOpVWns.png?scale-down-to=4096&width=5760&height=3840 4096w,https://framerusercontent.com/images/7nb7uJkXqzrgpzATdYGOeOpVWns.png?width=5760&height=3840 5760w",
+    "alt": "Breakfast and Brunch",
+    "width": "5760",
+    "height": "3840",
+    "id": "dinner-with-music-7",
+    "source_pages": [
+      "https://andaazrestaurant.com/dinner-with-music"
+    ],
+    "local_path": "assets/originals/dinner-with-music-7.jpg",
+    "actual_width": 5760,
+    "actual_height": 3840,
+    "bytes": 5606163,
+    "sha256": "c2ed1da15bf1461da6b97ed6db1887f2ab74236b357518010d44af92d71f3d2e",
+    "downloaded": true
+  },
+  {
+    "src": "https://framerusercontent.com/images/yoE0n2QW0QnAwFpzjyyBi9DOhdk.jpeg?width=1200&height=1600",
+    "srcset": "https://framerusercontent.com/images/yoE0n2QW0QnAwFpzjyyBi9DOhdk.jpeg?scale-down-to=1024&width=1200&height=1600 768w,https://framerusercontent.com/images/yoE0n2QW0QnAwFpzjyyBi9DOhdk.jpeg?width=1200&height=1600 1200w",
+    "alt": "Breakfast and Brunch",
+    "width": "1200",
+    "height": "1600",
+    "id": "dinner-with-music-8",
+    "source_pages": [
+      "https://andaazrestaurant.com/dinner-with-music"
+    ],
+    "local_path": "assets/originals/dinner-with-music-8.jpg",
+    "actual_width": 1200,
+    "actual_height": 1600,
+    "bytes": 167909,
+    "sha256": "68ce4c59e7b1bc70c6cc0c60f49de3a7fb3bb14aac5da5f284881ec37d7c5e9d",
+    "downloaded": true
+  },
+  {
+    "src": "https://framerusercontent.com/images/vkBeJqFSCcuvoLn5zFxnYMxM.png?width=1200&height=900",
+    "srcset": "https://framerusercontent.com/images/vkBeJqFSCcuvoLn5zFxnYMxM.png?scale-down-to=512&width=1200&height=900 512w,https://framerusercontent.com/images/vkBeJqFSCcuvoLn5zFxnYMxM.png?scale-down-to=1024&width=1200&height=900 1024w,https://framerusercontent.com/images/vkBeJqFSCcuvoLn5zFxnYMxM.png?width=1200&height=900 1200w",
+    "alt": "Breakfast and Brunch",
+    "width": "1200",
+    "height": "900",
+    "id": "shining-moments-1",
+    "source_pages": [
+      "https://andaazrestaurant.com/shining-moments"
+    ],
+    "local_path": "assets/originals/shining-moments-1.jpg",
+    "actual_width": 1200,
+    "actual_height": 900,
+    "bytes": 363664,
+    "sha256": "fb2c9746ba168398c677d8d289c9f4b2822488aae7d6c6d0f1a78a2eff0010e5",
+    "downloaded": true
+  },
+  {
+    "src": "https://framerusercontent.com/images/wPnqg7wupGi74L1rELJB5GcLl8.png?width=1080&height=1350",
+    "srcset": "https://framerusercontent.com/images/wPnqg7wupGi74L1rELJB5GcLl8.png?scale-down-to=1024&width=1080&height=1350 819w,https://framerusercontent.com/images/wPnqg7wupGi74L1rELJB5GcLl8.png?width=1080&height=1350 1080w",
+    "alt": "Breakfast and Brunch",
+    "width": "1080",
+    "height": "1350",
+    "id": "shining-moments-3",
+    "source_pages": [
+      "https://andaazrestaurant.com/shining-moments"
+    ],
+    "local_path": "assets/originals/shining-moments-3.jpg",
+    "actual_width": 1080,
+    "actual_height": 1350,
+    "bytes": 573228,
+    "sha256": "5a5006a86519ed642b875d0e0b00f402730ea48282c5a8888d566b1164f82a7b",
+    "downloaded": true
+  },
+  {
+    "src": "https://framerusercontent.com/images/qPiv3gow8kZ9W3iS7pRFhSReUc.png?width=1200&height=900",
+    "srcset": "https://framerusercontent.com/images/qPiv3gow8kZ9W3iS7pRFhSReUc.png?scale-down-to=512&width=1200&height=900 512w,https://framerusercontent.com/images/qPiv3gow8kZ9W3iS7pRFhSReUc.png?scale-down-to=1024&width=1200&height=900 1024w,https://framerusercontent.com/images/qPiv3gow8kZ9W3iS7pRFhSReUc.png?width=1200&height=900 1200w",
+    "alt": "Breakfast and Brunch",
+    "width": "1200",
+    "height": "900",
+    "id": "shining-moments-4",
+    "source_pages": [
+      "https://andaazrestaurant.com/shining-moments"
+    ],
+    "local_path": "assets/originals/shining-moments-4.jpg",
+    "actual_width": 1200,
+    "actual_height": 900,
+    "bytes": 399347,
+    "sha256": "3120ddd92a29d4a2c96287f6e90ae45819df473175bd79e4c097fcf68be9ed8b",
+    "downloaded": true
+  },
+  {
+    "src": "https://framerusercontent.com/images/vBUkaKRV2manxRLQLIJH7kX0ebI.png?width=3024&height=4032",
+    "srcset": "https://framerusercontent.com/images/vBUkaKRV2manxRLQLIJH7kX0ebI.png?scale-down-to=1024&width=3024&height=4032 768w,https://framerusercontent.com/images/vBUkaKRV2manxRLQLIJH7kX0ebI.png?scale-down-to=2048&width=3024&height=4032 1536w,https://framerusercontent.com/images/vBUkaKRV2manxRLQLIJH7kX0ebI.png?width=3024&height=4032 3024w",
+    "alt": "Breakfast and Brunch",
+    "width": "3024",
+    "height": "4032",
+    "id": "shining-moments-6",
+    "source_pages": [
+      "https://andaazrestaurant.com/shining-moments"
+    ],
+    "local_path": "assets/originals/shining-moments-6.jpg",
+    "actual_width": 3024,
+    "actual_height": 4032,
+    "bytes": 3602599,
+    "sha256": "cf3c82d0b3f4059b022a73733b9f035060dc4d4848cca55f7e0a4ab952841a16",
+    "downloaded": true
+  },
+  {
+    "src": "https://framerusercontent.com/images/F8OApDXCVZFpboWjXrHZKFJfLw.jpg?width=5578&height=3712",
+    "srcset": "https://framerusercontent.com/images/F8OApDXCVZFpboWjXrHZKFJfLw.jpg?scale-down-to=512&width=5578&height=3712 512w,https://framerusercontent.com/images/F8OApDXCVZFpboWjXrHZKFJfLw.jpg?scale-down-to=1024&width=5578&height=3712 1024w,https://framerusercontent.com/images/F8OApDXCVZFpboWjXrHZKFJfLw.jpg?scale-down-to=2048&width=5578&height=3712 2048w,https://framerusercontent.com/images/F8OApDXCVZFpboWjXrHZKFJfLw.jpg?scale-down-to=4096&width=5578&height=3712 4096w,https://framerusercontent.com/images/F8OApDXCVZFpboWjXrHZKFJfLw.jpg?width=5578&height=3712 5578w",
+    "alt": "Breakfast and Brunch",
+    "width": "5578",
+    "height": "3712",
+    "id": "shining-moments-7",
+    "source_pages": [
+      "https://andaazrestaurant.com/shining-moments"
+    ],
+    "local_path": "assets/originals/shining-moments-7.jpg",
+    "actual_width": 5578,
+    "actual_height": 3712,
+    "bytes": 1964489,
+    "sha256": "a2fb54a3430a19a85d94e1f5133436022a36a861f2d58c2c522262669bb366e3",
+    "downloaded": true
+  },
+  {
+    "src": "https://framerusercontent.com/images/e4hGNj5CdhYYkh4AIMrSR37sj0.png?width=3024&height=4032",
+    "srcset": "https://framerusercontent.com/images/e4hGNj5CdhYYkh4AIMrSR37sj0.png?scale-down-to=1024&width=3024&height=4032 768w,https://framerusercontent.com/images/e4hGNj5CdhYYkh4AIMrSR37sj0.png?scale-down-to=2048&width=3024&height=4032 1536w,https://framerusercontent.com/images/e4hGNj5CdhYYkh4AIMrSR37sj0.png?width=3024&height=4032 3024w",
+    "alt": "Breakfast and Brunch",
+    "width": "3024",
+    "height": "4032",
+    "id": "shining-moments-8",
+    "source_pages": [
+      "https://andaazrestaurant.com/shining-moments"
+    ],
+    "local_path": "assets/originals/shining-moments-8.jpg",
+    "actual_width": 3024,
+    "actual_height": 4032,
+    "bytes": 2317805,
+    "sha256": "c67718f63a3183a416845bb27de8ada3ba5ae154a4ce0df613b72d91b0067d58",
+    "downloaded": true
+  },
+  {
+    "src": "https://framerusercontent.com/images/miP6LUCEUyUVhHaZtNvBbne7R4.png?width=1200&height=900",
+    "srcset": "https://framerusercontent.com/images/miP6LUCEUyUVhHaZtNvBbne7R4.png?scale-down-to=512&width=1200&height=900 512w,https://framerusercontent.com/images/miP6LUCEUyUVhHaZtNvBbne7R4.png?scale-down-to=1024&width=1200&height=900 1024w,https://framerusercontent.com/images/miP6LUCEUyUVhHaZtNvBbne7R4.png?width=1200&height=900 1200w",
+    "alt": "Breakfast and Brunch",
+    "width": "1200",
+    "height": "900",
+    "id": "wedding-gatherings-1",
+    "source_pages": [
+      "https://andaazrestaurant.com/wedding-gatherings"
+    ],
+    "local_path": "assets/originals/wedding-gatherings-1.jpg",
+    "actual_width": 1200,
+    "actual_height": 900,
+    "bytes": 502684,
+    "sha256": "bd51c5db87cbe77fc75d3e370341c03d650115ea1a5ce6f749ec16c3e3053572",
+    "downloaded": true
+  },
+  {
+    "src": "https://framerusercontent.com/images/pLlVU6fQhk6VIOs6tJxgXEMZO4.png?width=3024&height=4032",
+    "srcset": "https://framerusercontent.com/images/pLlVU6fQhk6VIOs6tJxgXEMZO4.png?scale-down-to=1024&width=3024&height=4032 768w,https://framerusercontent.com/images/pLlVU6fQhk6VIOs6tJxgXEMZO4.png?scale-down-to=2048&width=3024&height=4032 1536w,https://framerusercontent.com/images/pLlVU6fQhk6VIOs6tJxgXEMZO4.png?width=3024&height=4032 3024w",
+    "alt": "Breakfast and Brunch",
+    "width": "3024",
+    "height": "4032",
+    "id": "wedding-gatherings-2",
+    "source_pages": [
+      "https://andaazrestaurant.com/wedding-gatherings"
+    ],
+    "local_path": "assets/originals/wedding-gatherings-2.jpg",
+    "actual_width": 3024,
+    "actual_height": 4032,
+    "bytes": 3801009,
+    "sha256": "16a7a7f3b75b341cd94739ef18e0227a12165377afad38a66a5eeb302d80772f",
+    "downloaded": true
+  },
+  {
+    "src": "https://framerusercontent.com/images/IzBKbs02mg3Xjvclgsa789IpWe8.png?width=1200&height=900",
+    "srcset": "https://framerusercontent.com/images/IzBKbs02mg3Xjvclgsa789IpWe8.png?scale-down-to=512&width=1200&height=900 512w,https://framerusercontent.com/images/IzBKbs02mg3Xjvclgsa789IpWe8.png?scale-down-to=1024&width=1200&height=900 1024w,https://framerusercontent.com/images/IzBKbs02mg3Xjvclgsa789IpWe8.png?width=1200&height=900 1200w",
+    "alt": "Breakfast and Brunch",
+    "width": "1200",
+    "height": "900",
+    "id": "wedding-gatherings-4",
+    "source_pages": [
+      "https://andaazrestaurant.com/wedding-gatherings"
+    ],
+    "local_path": "assets/originals/wedding-gatherings-4.jpg",
+    "actual_width": 1200,
+    "actual_height": 900,
+    "bytes": 376771,
+    "sha256": "61231ddf556fbbb3780df41221510bd1e2de50c7e72eda1567b280fa8c6eb2a4",
+    "downloaded": true
+  },
+  {
+    "src": "https://framerusercontent.com/images/TSDEE5c5X8mwvk7VGicaKgM6juk.png?width=3024&height=4032",
+    "srcset": "https://framerusercontent.com/images/TSDEE5c5X8mwvk7VGicaKgM6juk.png?scale-down-to=1024&width=3024&height=4032 768w,https://framerusercontent.com/images/TSDEE5c5X8mwvk7VGicaKgM6juk.png?scale-down-to=2048&width=3024&height=4032 1536w,https://framerusercontent.com/images/TSDEE5c5X8mwvk7VGicaKgM6juk.png?width=3024&height=4032 3024w",
+    "alt": "Breakfast and Brunch",
+    "width": "3024",
+    "height": "4032",
+    "id": "wedding-gatherings-5",
+    "source_pages": [
+      "https://andaazrestaurant.com/wedding-gatherings"
+    ],
+    "local_path": "assets/originals/wedding-gatherings-5.jpg",
+    "actual_width": 3024,
+    "actual_height": 4032,
+    "bytes": 2325902,
+    "sha256": "5105d0018ccc4a134ee90797b17d3587ae4613d5f8b3cfa029f3ca856e904f0d",
+    "downloaded": true
+  },
+  {
+    "src": "https://framerusercontent.com/images/XhsDD88I84u1viCfyINzDV5EQpU.png?width=1200&height=900",
+    "srcset": "https://framerusercontent.com/images/XhsDD88I84u1viCfyINzDV5EQpU.png?scale-down-to=512&width=1200&height=900 512w,https://framerusercontent.com/images/XhsDD88I84u1viCfyINzDV5EQpU.png?scale-down-to=1024&width=1200&height=900 1024w,https://framerusercontent.com/images/XhsDD88I84u1viCfyINzDV5EQpU.png?width=1200&height=900 1200w",
+    "alt": "Breakfast and Brunch",
+    "width": "1200",
+    "height": "900",
+    "id": "wedding-gatherings-7",
+    "source_pages": [
+      "https://andaazrestaurant.com/wedding-gatherings"
+    ],
+    "local_path": "assets/originals/wedding-gatherings-7.jpg",
+    "actual_width": 1200,
+    "actual_height": 900,
+    "bytes": 281071,
+    "sha256": "e0054253dd199037f79d779342191e9f7eb049b6433c210630103927526cd20f",
+    "downloaded": true
+  },
+  {
+    "src": "https://framerusercontent.com/images/JhLRhydb6mpxJJCP4zbmDVMWw.png?width=3024&height=4032",
+    "srcset": "https://framerusercontent.com/images/JhLRhydb6mpxJJCP4zbmDVMWw.png?scale-down-to=1024&width=3024&height=4032 768w,https://framerusercontent.com/images/JhLRhydb6mpxJJCP4zbmDVMWw.png?scale-down-to=2048&width=3024&height=4032 1536w,https://framerusercontent.com/images/JhLRhydb6mpxJJCP4zbmDVMWw.png?width=3024&height=4032 3024w",
+    "alt": "Breakfast and Brunch",
+    "width": "3024",
+    "height": "4032",
+    "id": "wedding-gatherings-8",
+    "source_pages": [
+      "https://andaazrestaurant.com/wedding-gatherings"
+    ],
+    "local_path": "assets/originals/wedding-gatherings-8.jpg",
+    "actual_width": 3024,
+    "actual_height": 4032,
+    "bytes": 2472540,
+    "sha256": "268ffc0b06ba142317755d23ff3aff66ae4e9921df78d78e89b7c1d5e9ba0c17",
+    "downloaded": true
+  },
+  {
+    "src": "https://framerusercontent.com/images/mSeqjIzvdNx7cd9FadzlcMrKsk.jpg?width=1440&height=1800",
+    "srcset": "https://framerusercontent.com/images/mSeqjIzvdNx7cd9FadzlcMrKsk.jpg?scale-down-to=1024&width=1440&height=1800 819w,https://framerusercontent.com/images/mSeqjIzvdNx7cd9FadzlcMrKsk.jpg?width=1440&height=1800 1440w",
+    "alt": "Anniversary dinner table at Andaaz Restaurant in Lahore.",
+    "width": "1440",
+    "height": "1800",
+    "id": "anniversary-dinner-lahore-1",
+    "source_pages": [
+      "https://andaazrestaurant.com/anniversary-dinner-lahore"
+    ],
+    "local_path": "assets/originals/anniversary-dinner-lahore-1.jpg",
+    "actual_width": 1440,
+    "actual_height": 1800,
+    "bytes": 391408,
+    "sha256": "c5ebf4b3cf90b971f63c9c187b52069dcc488cf0bafc2056704ac0f2f4dd4025",
+    "downloaded": true
+  },
+  {
+    "src": "https://framerusercontent.com/images/9MLfWp6SAh4FeAu9SViu8kOxwN0.jpg?width=1200&height=800",
+    "srcset": "https://framerusercontent.com/images/9MLfWp6SAh4FeAu9SViu8kOxwN0.jpg?scale-down-to=512&width=1200&height=800 512w,https://framerusercontent.com/images/9MLfWp6SAh4FeAu9SViu8kOxwN0.jpg?scale-down-to=1024&width=1200&height=800 1024w,https://framerusercontent.com/images/9MLfWp6SAh4FeAu9SViu8kOxwN0.jpg?width=1200&height=800 1200w",
+    "alt": "Guests enjoying an intimate dinner at Andaaz Restaurant Lahore.",
+    "width": "1200",
+    "height": "800",
+    "id": "anniversary-dinner-lahore-3",
+    "source_pages": [
+      "https://andaazrestaurant.com/anniversary-dinner-lahore"
+    ],
+    "local_path": "assets/originals/anniversary-dinner-lahore-3.jpg",
+    "actual_width": 1200,
+    "actual_height": 800,
+    "bytes": 95666,
+    "sha256": "a77a6f1ebed257c7b2d7b86d1f3918e56f0f7926965a34f6974e747e5b0f393c",
+    "downloaded": true
+  },
+  {
+    "src": "https://framerusercontent.com/images/lpEh148Sm1CIqN7Ql1I2nmlTcY.jpg?width=7952&height=5304",
+    "srcset": "https://framerusercontent.com/images/lpEh148Sm1CIqN7Ql1I2nmlTcY.jpg?scale-down-to=512&width=7952&height=5304 512w,https://framerusercontent.com/images/lpEh148Sm1CIqN7Ql1I2nmlTcY.jpg?scale-down-to=1024&width=7952&height=5304 1024w,https://framerusercontent.com/images/lpEh148Sm1CIqN7Ql1I2nmlTcY.jpg?scale-down-to=2048&width=7952&height=5304 2048w,https://framerusercontent.com/images/lpEh148Sm1CIqN7Ql1I2nmlTcY.jpg?scale-down-to=4096&width=7952&height=5304 4096w,https://framerusercontent.com/images/lpEh148Sm1CIqN7Ql1I2nmlTcY.jpg?width=7952&height=5304 7952w",
+    "alt": "dinner-lahore.jpg Romantic rooftop dinner at Andaaz Restaurant in Lahore.",
+    "width": "7952",
+    "height": "5304",
+    "id": "anniversary-dinner-lahore-5",
+    "source_pages": [
+      "https://andaazrestaurant.com/anniversary-dinner-lahore"
+    ],
+    "local_path": "assets/originals/anniversary-dinner-lahore-5.jpg",
+    "actual_width": 7952,
+    "actual_height": 5304,
+    "bytes": 10972001,
+    "sha256": "a3b2954fee44eea60df41a995e551bad40a12e356583273660fa5e2cf60476a1",
+    "downloaded": true
+  },
+  {
+    "src": "https://framerusercontent.com/images/McfNqDAzbFPa1SdEdhbvU6qJGh0.jpg?width=1080&height=1350",
+    "srcset": "https://framerusercontent.com/images/McfNqDAzbFPa1SdEdhbvU6qJGh0.jpg?scale-down-to=1024&width=1080&height=1350 819w,https://framerusercontent.com/images/McfNqDAzbFPa1SdEdhbvU6qJGh0.jpg?width=1080&height=1350 1080w",
+    "alt": "dinner-lahore.jpg Romantic rooftop dinner at Andaaz Restaurant in Lahore.",
+    "width": "1080",
+    "height": "1350",
+    "id": "anniversary-dinner-lahore-6",
+    "source_pages": [
+      "https://andaazrestaurant.com/anniversary-dinner-lahore"
+    ],
+    "local_path": "assets/originals/anniversary-dinner-lahore-6.jpg",
+    "actual_width": 1080,
+    "actual_height": 1350,
+    "bytes": 306701,
+    "sha256": "78f7705164ae9e4d3d13c4d283e5f8e910bf4c63ea84f16355926ba9db3e8891",
+    "downloaded": true
+  },
+  {
+    "src": "https://framerusercontent.com/images/mrCDARzIPMA17LPpKVRP9PASdg.jpg?width=865&height=1080",
+    "srcset": "https://framerusercontent.com/images/mrCDARzIPMA17LPpKVRP9PASdg.jpg?scale-down-to=1024&width=865&height=1080 820w,https://framerusercontent.com/images/mrCDARzIPMA17LPpKVRP9PASdg.jpg?width=865&height=1080 865w",
+    "alt": "Candlelit special evening at Andaaz Restaurant Lahore.",
+    "width": "865",
+    "height": "1080",
+    "id": "anniversary-dinner-lahore-7",
+    "source_pages": [
+      "https://andaazrestaurant.com/anniversary-dinner-lahore"
+    ],
+    "local_path": "assets/originals/anniversary-dinner-lahore-7.jpg",
+    "actual_width": 865,
+    "actual_height": 1080,
+    "bytes": 137516,
+    "sha256": "ac829aced1cda26c30de3cbd989458937b57dccf0cd1013aa6e1ac202e3bb8fa",
+    "downloaded": true
+  },
+  {
+    "src": "https://framerusercontent.com/images/xbOp82TgeCMw8ZT3MR7LG4Bgn4.jpg?width=4000&height=6000",
+    "srcset": "https://framerusercontent.com/images/xbOp82TgeCMw8ZT3MR7LG4Bgn4.jpg?scale-down-to=1024&width=4000&height=6000 682w,https://framerusercontent.com/images/xbOp82TgeCMw8ZT3MR7LG4Bgn4.jpg?scale-down-to=2048&width=4000&height=6000 1365w,https://framerusercontent.com/images/xbOp82TgeCMw8ZT3MR7LG4Bgn4.jpg?scale-down-to=4096&width=4000&height=6000 2730w,https://framerusercontent.com/images/xbOp82TgeCMw8ZT3MR7LG4Bgn4.jpg?width=4000&height=6000 4000w",
+    "alt": "Anniversary dinner with a view of Badshahi Masjid from Andaaz Restaurant Lahore.",
+    "width": "4000",
+    "height": "6000",
+    "id": "anniversary-dinner-lahore-9",
+    "source_pages": [
+      "https://andaazrestaurant.com/anniversary-dinner-lahore"
+    ],
+    "local_path": "assets/originals/anniversary-dinner-lahore-9.jpg",
+    "actual_width": 4000,
+    "actual_height": 6000,
+    "bytes": 2504743,
+    "sha256": "17753eb9afd099f0a80817bda5d21ceaae3fcde02ea666a0139628a02d6795f8",
+    "downloaded": true
+  }
+]

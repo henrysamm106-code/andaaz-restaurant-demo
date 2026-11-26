@@ -1,0 +1,55 @@
+{
+  "source": "https://andaazrestaurant.com/andaaz-menu",
+  "verified_on": "2026-11-25",
+  "scope": "Selected dishes and drinks named on the official HTML menu. This is not the complete menu. Use the included original three-page PDF for the full menu.",
+  "prices": "No item prices have been transcribed into this highlights file. The original PDF contains printed prices; verify any transcription and current applicability before using them in HTML or AI answers.",
+  "photos": "No individual dish-to-photo matches were verified. Do not attach a venue photo or a stock food image to a specific dish as if it depicts that item.",
+  "categories": [
+    {
+      "name": "Tandoor",
+      "items": [
+        "Masala Chanp",
+        "Murgh Malai Tikka",
+        "Macchli Gulnar",
+        "Bewazni Paneer Tikka"
+      ]
+    },
+    {
+      "name": "Karahi",
+      "items": [
+        "Bhuna Gosht",
+        "Murgh Kali Mirch",
+        "Mutton Shank Achari",
+        "Nizami Murgh Kaju"
+      ]
+    },
+    {
+      "name": "Seafood",
+      "items": [
+        "Tandoori Jhinga",
+        "Jhinga Karahi",
+        "Pakoras of the Sea"
+      ]
+    },
+    {
+      "name": "Desserts",
+      "items": [
+        "Jalebi Garam",
+        "Firni",
+        "Shahi Tukra"
+      ]
+    },
+    {
+      "name": "Drinks",
+      "items": [
+        "Kehwa",
+        "Karak Chai",
+        "Kashmiri Chai",
+        "Coffee",
+        "Lassi",
+        "Nimbu Soda",
+        "Jal Jeera"
+      ]
+    }
+  ]
+}

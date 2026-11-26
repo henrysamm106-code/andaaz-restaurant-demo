@@ -1,0 +1,8 @@
+{
+  "name": "Andaaz Restaurant — Fort Road, Lahore",
+  "description": "Redesign preview for Andaaz Restaurant, Fort Road, Walled City of Lahore. Explore heritage dining spaces, verified menu highlights, and guided reservation requests.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

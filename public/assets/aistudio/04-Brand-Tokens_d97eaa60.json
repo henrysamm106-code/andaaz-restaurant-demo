@@ -1,0 +1,28 @@
+{
+  "source": "Computed styles observed on the official homepage on 2026-11-25; these are website values, not a supplied brand manual.",
+  "colours": {
+    "background_ivory": "#FAF8F3",
+    "primary_navy": "#172332",
+    "navigation_navy": "#1F2B38",
+    "secondary_slate": "#4F5D6A",
+    "primary_rose": "#7E4D54",
+    "soft_rose": "#AA7C7E"
+  },
+  "fonts_observed": {
+    "headings_and_navigation": "Cormorant Garamond",
+    "body_and_actions": "Inter",
+    "footer_address": "Instrument Sans"
+  },
+  "recommended_design_use": "Retain Cormorant Garamond and Inter. Use ivory as the main surface, navy for text and selected evening sections, and deep rose for actions. Use soft rose for larger accents after checking contrast.",
+  "logo": {
+    "path": "assets/originals/logo-original.jpg",
+    "dimensions": [
+      1399,
+      1604
+    ],
+    "format": "JPEG",
+    "transparent": false,
+    "instructions": "Use the authentic logo in its original aspect ratio on a compatible ivory surface. Do not redraw, recolour, stretch or turn it into a made-up SVG."
+  },
+  "proposal_not_original_brand_rule": "Restrained cinematic movement, architectural framing and editorial photo compositions are recommendations for this redesign."
+}

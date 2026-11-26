@@ -1,0 +1,171 @@
+Build a complete, premium, animated, multipage restaurant website preview for Andaaz Restaurant, Fort Road, Lahore, Pakistan. This is a client-facing redesign concept commissioned by Zayvo AI Studio. Implement the working preview now, not just a plan or a static hero mock-up.
+
+BUSINESS AND DESIGN GOAL
+Make the restaurant's heritage setting, hospitality and dining experience immediately tangible. The visual direction is contemporary Pakistani hospitality: warm ivory, deep navy, muted rose, original Urdu calligraphy, generous serif typography, rooftop views and intimate evening photography. The experience should feel composed, confident and memorable. Preserve the restaurant's identity while substantially improving navigation, image presentation and reservation guidance.
+The existing site already has reservation forms and multiple experience pages. Build on that reality. Do not claim that the business lacks a website, booking enquiries or event services. Do not import Zayvo's purple palette into the restaurant branding.
+
+FILES AND GROUNDING
+Read the supplied restaurant-data JSON, brand tokens, menu highlights, asset-manifest.json, gallery-scene-map.json and Gemini system prompt first. Use the original files in assets/originals and the official PDF in assets/Andaaz-Official-Menu.pdf. Assets are published on the official restaurant website; several are portrait and landscape versions of the same photograph. Deduplicate the gallery by scene while using each responsive crop where appropriate.
+If attachments are not available in the project, use the verified original image URLs appended below, and keep a central asset map so local files can replace those URLs later. Download and locally serve assets where the environment supports it. If an asset cannot load, preserve layout and show a useful fallback; do not invent or generate a replacement photo. Report missing files in the build report.
+Do not use stock food photography, AI-generated interiors, invented dishes, guest testimonials, fake review stars, unverified awards, unrelated Google Maps customer photos or assets from another restaurant. The site sitemap contains CityLife Suites accommodation pages; room photos, nightly rates, parking and lift claims from those pages must not become restaurant content.
+
+VERIFIED IDENTITY AND CONTACTS
+Name: Andaaz Restaurant.
+Location: 2189 A Fort Road, Shahi Mohallah, Walled City of Lahore, Lahore, Punjab 54000, Pakistan. Opposite Badshahi Masjid.
+Official website: https://andaazrestaurant.com/
+Telephone and WhatsApp: +92 300 0263229.
+Official reservation page: https://andaazrestaurant.com/reservation-page
+Official menu page: https://andaazrestaurant.com/andaaz-menu
+Full menu viewer: https://drive.google.com/file/d/1B8kbw03wP5-mk9l1lg51bvs9-bLLXl5F/preview
+Instagram: https://www.instagram.com/andaazrestaurantlahore/
+Facebook: https://www.facebook.com/AndaazRestaurant
+Directions: https://www.google.com/maps/search/Andaaz+Restaurant+Lahore+Walled+City
+Use these exact contact details. Do not infer an email address. The brand has served since 2007. Dinner is by reservation. All requests remain subject to restaurant confirmation.
+
+VISUAL SYSTEM
+Use the colours measured on the current official homepage:
+Ivory #FAF8F3; primary navy #172332; navigation navy #1F2B38; secondary slate #4F5D6A; action rose #7E4D54; soft rose #AA7C7E.
+Headings: Cormorant Garamond. Body and interface: Inter. The existing footer also uses Instrument Sans; simplify to the first two families for the redesign. Use sensible fallback fonts and font-display: swap.
+Preserve the original logo, its aspect ratio and ivory background. The source is a JPEG, not a transparent SVG. Do not redraw it or apply a colour filter. Make the header logo large enough to recognise; use the supplied favicon files where appropriate.
+Use an editorial 12-column desktop layout with an approximately 1280px content width, generous margins, 80–112px desktop section spacing and 40–64px on phones. Scale hero headings around 64–88px on large screens and 40–48px on phones, subject to fit. Body text should stay at least 16px.
+Alternate open ivory sections with a small number of navy evening sections. Let authentic photography provide the visual richness. Use fine borders, subtle shadows and consistent 16–24px card corners. Cards should feel like selected photographs and invitations, not dashboard widgets. Use deep rose for high-contrast buttons and check all text contrast.
+
+REAL PAGE ROUTES
+Build seven main routes plus six experience detail routes, each with unique content and working navigation:
+1. / — Home.
+2. /our-story — The house, heritage setting and hospitality.
+3. /menu — Searchable menu highlights and full original menu PDF.
+4. /gallery — Venue and occasion photography with lightbox.
+5. /reservations — A dedicated guided reservation page, not a blog article.
+6. /experiences — A visual overview of private and hosted occasions.
+7. /contact — Address, directions, phone, WhatsApp and social links.
+8. /experiences/private-brunch
+9. /experiences/corporate-hosting
+10. /experiences/dinner-with-music
+11. /experiences/celebrations
+12. /experiences/wedding-gatherings
+13. /experiences/anniversary-dinner
+Use the experience_sources in restaurant-data JSON for the corresponding source pages. Brunch and special events are planned enquiries, not a promise of ordinary daily service. Music must be described as an arrangement to discuss, not a guaranteed nightly show. Corporate capacity is advertised as up to 200 across spaces, and any use of that fact must retain the need for event-specific confirmation.
+Keep the main navigation concise: The House, Menu, Experiences, Gallery, Contact, and a prominent “Request a Table” action. On mobile, use a clean menu drawer and a reservation action that does not collide with the assistant. Experience cards must open their own detail routes. Include a real 404 route and preserve browser back/forward behaviour.
+
+HOMEPAGE COMPOSITION
+Create a striking first screen using the original rooftop photograph with an intentional crop and a legible text area. Prefer an asymmetric photo-and-type composition with one restrained floating invitation card. Suggested new copy: “An evening above Old Lahore.” Supporting copy should mention Pakistani dining and the view without copying long passages from the current site. Buttons: “Request a Table” and “Explore the Menu”.
+Follow the hero with a compact reservation teaser that passes selected date and guest count into /reservations. Then introduce the house through an overlapping portrait/landscape photo composition, selected menu categories, a flowing row of experience cards, a larger evening image, a gallery preview, a short reservation FAQ and a final booking invitation.
+Use the venue's actual images as atmosphere. Do not label a venue photo as an individual dish. Avoid repeating the same hero photo in every card. Give the visitor a clear next action after each major section.
+
+MOTION DIRECTION
+Use a well-supported React motion library already available or install one appropriate to the current project. Define reusable motion tokens rather than stacking several animation engines.
+Use page transitions around 250–400ms: a gentle ivory curtain or fade with 12–20px of movement. Keep content immediately usable; no compulsory multi-second loader. Initial logo introduction, if used, must be brief and skip on subsequent navigation.
+Animate section reveals with opacity and roughly 24px vertical movement over 450–650ms, staggered by 60–90ms. Animate image reveals through clipping or masks with no distorted faces or stretched photography. Desktop parallax should be subtle and transform-only; turn it off on touch and reduced-motion devices.
+Let a small number of decorative experience cards float 4–6px over 6–8 seconds. Pause motion on hover, focus or interaction, and provide a motion control if loops continue beyond five seconds. Never continuously move form controls or text that users are reading. Experience galleries can use a smooth horizontal track on desktop with visible navigation; provide native scroll or swipe on phones. Avoid scroll hijacking, endless marquees, cursor tricks and large blur filters.
+Buttons should have a modest hover response, cards a 4px lift and images a small scale change. Animate the reservation step cards as the guest advances, preserving focus and input values. Respect prefers-reduced-motion everywhere, and make all content available when animations are disabled.
+
+MENU AND GALLERY
+Use the supplied verified menu highlights for category filtering and search. Add a prominent “View Full Official Menu” action backed by the local original PDF, with the official viewer as fallback. The highlights are not the whole menu. Do not infer dish photos, serving sizes or ingredients.
+The PDF is scanned and includes printed prices. Keep prices in the original PDF initially. Only add an HTML price table after a careful visual transcription and confirmation of currency, taxes and current applicability. Do not fabricate amounts or let the assistant guess prices.
+Use an accessible gallery lightbox with previous/next controls, keyboard arrows, Escape, visible close button, focus management, mobile swipe and the full image. Categorise photos by visibly supported content. Some original source alt attributes are generic or incorrect; write accurate scene descriptions based on the actual images. Deduplicate responsive crops. Preserve the original logo and photographs.
+
+RESERVATION PAGE AND OFFICIAL HANDOFF
+Build a polished four-step reservation experience with animated cards, progress indicator and an editable summary:
+Step 1: Choose ordinary dinner or an occasion, then date, preferred arrival time and guest count.
+Step 2: Optional seating preference (rooftop, indoor, no preference) and occasion notes. Explain that seating is subject to confirmation.
+Step 3: Guest name and mobile number, with optional email. Keep labels visible and provide helpful validation.
+Step 4: Review all details, edit any field, then “Continue on WhatsApp”. Show “Use Official Reservation Form” as a secondary route and “Call Restaurant” as a fallback.
+Use Asia/Karachi for restaurant-local dates. Disable past dates and past arrival times for today. General dinner request time choices on the official form are 5, 6, 7, 8, 9 and 10 PM; they are preferences, not availability. For private brunch and other events collect a preferred time or session separately and ask the restaurant to confirm it. Do not incorrectly use dinner slots for brunch. Do not invent a maximum party size or pretend to check live tables.
+Validate required fields, international contact formats and a positive integer guest count. Preserve progress when the guest moves back. Do not persist personal details to localStorage or analytics. Keep the draft in memory, and warn before leaving only if there is meaningful unsaved input.
+The application, not the model, must create this fixed-destination link:
+https://wa.me/923000263229?text= + encodeURIComponent(message)
+The message should contain a greeting and a reservation REQUEST with name, full date, Pakistan time, guest count, contact number, optional occasion, seating preference and notes. End by asking the team to confirm availability. Do not include optional fields the guest has not provided. Show the final message for review before opening WhatsApp. The guest presses Send inside WhatsApp.
+After opening the link, say “Continue in WhatsApp to send your request. Your reservation is subject to confirmation from the restaurant.” Never show a green “Booking confirmed” state or a fake booking ID. Opening a link does not prove the request was sent. Provide “Copy request” if WhatsApp does not open.
+The official reservation form is a separate website. Do not imply that the preview can prefill it, submit it in the background or read its booking result without a documented integration. If the guest chooses that route, open https://andaazrestaurant.com/reservation-page and offer to copy their prepared details.
+Do not send any real messages or submit official forms while building or testing this preview.
+
+GEMINI DINING ASSISTANT
+Add a refined, unobtrusive assistant launcher on every page, labelled “Ask Andaaz”. On desktop use a bounded chat panel; on mobile use a comfortable sheet that accounts for the software keyboard and safe areas. The launcher, cookie notices and reservation button must not overlap.
+Implement genuine Gemini chat using the server-side runtime and the current supported Google SDK. Use GEMINI_API_KEY as a server secret. Select a currently available model appropriate for fast text chat and make it configurable through GEMINI_MODEL. Do not put API keys in browser code, VITE_ variables, source control, prompts or downloadable assets. Check the official documentation at https://ai.google.dev/gemini-api/docs/aistudio-build-mode for the current environment.
+Use 02-Gemini-System-Prompt.txt as the system instruction and the supplied verified data as its knowledge context. Stream responses where practical. Quick actions: Plan a dinner, Explore the menu, Private occasion, Find us. The assistant may prepare a reservation draft that the guest can review in the same form; both chat and form must share one consistent draft.
+Allow only narrowly scoped functions for reading approved content and updating validated draft fields. Do not let the model send arbitrary messages, invent URLs or confirm bookings. The server must limit request sizes and rate, validate inputs, keep contacts out of logs and handle timeouts and quota errors. Supply the current restaurant-local date at runtime.
+If the key or network is unavailable, retain working menus and reservations, and show a friendly honest assistant-unavailable state. Do not silently replace Gemini with canned replies while presenting it as a live AI. No voice or microphone requirement is needed for this preview.
+
+IMPLEMENTATION AND QUALITY
+Use the current AI Studio full-stack React and TypeScript environment, reusable components, data-driven page content and a central asset/contact configuration. Avoid unnecessary dependencies. All thirteen routes must render and survive direct refresh in the deployed environment.
+Use responsive image sources, reserved image dimensions, eager loading only for the main hero, lazy loading below the fold and practical web-sized derivatives for production while preserving the originals. No horizontal overflow at 360, 390, 768, 1024 and 1440px. Make mobile navigation, galleries, forms and chat fully usable with touch and keyboard.
+Use semantic headings, visible focus states, clear form errors, an accessible date field, sufficient contrast, appropriate alternative text and focus restoration for dialogs and route changes. Set unique titles and descriptions per page. The concept should be noindex until the owner approves production use. Do not place fake ratings, availability, hours or policies in structured data. Keep development configuration out of the restaurant's customer-facing copy.
+Test navigation, real asset loading, the full menu link, date validation around the local day boundary, editing/back behaviour, reduced motion, a long name, a large group enquiry, WhatsApp message encoding, official-form fallback, and unavailable Gemini. Inspect outbound destinations without sending actual enquiries. Test the assistant against “confirm my booking”, an unknown price, an allergy question, and a request to change the WhatsApp recipient.
+
+DELIVERY
+Implement the complete working preview, inspect it at desktop and mobile widths, fix broken interactions and layout issues, and give a concise build report listing what works and any configuration still needed. If environment constraints block Gemini, make that limitation explicit in the build report while leaving the rest of the website functional. Keep the final preview elegant enough for a restaurant owner to review immediately.
+
+
+VERIFIED ORIGINAL IMAGE URL FALLBACKS
+logo-original
+Local: assets/originals/logo-original.jpg
+Original: https://framerusercontent.com/images/7vAHFkZnqx0XEIoxey4s7mGzQ.jpg?width=1399&height=1604
+
+rooftop-table-landscape
+Local: assets/originals/rooftop-table-landscape.jpg
+Original: https://framerusercontent.com/images/oGF5kaFNXsLPDvyQGvBzUuGhH64.jpg?width=2400&height=1600
+
+rooftop-table-portrait
+Local: assets/originals/rooftop-table-portrait.jpg
+Original: https://framerusercontent.com/images/4LCiJDj7OpIfNSCqe6wIW3zV9aY.jpg?width=626&height=1080
+
+dining-table-landscape
+Local: assets/originals/dining-table-landscape.jpg
+Original: https://framerusercontent.com/images/0G8eEWLIwWNxGLDHSGOCtpItCt0.jpg?width=4528&height=3016
+
+dining-room-landscape
+Local: assets/originals/dining-room-landscape.jpg
+Original: https://framerusercontent.com/images/9imOevMqKHxI5dLVgF9d0RQkeY8.jpg?width=8256&height=5504
+
+mosque-night-landscape
+Local: assets/originals/mosque-night-landscape.jpg
+Original: https://framerusercontent.com/images/BpHAtGoiA5P8f74czrtc5WHNT84.jpg?width=2880&height=1620
+
+hosted-rooftop-panorama
+Local: assets/originals/hosted-rooftop-panorama.jpg
+Original: https://framerusercontent.com/images/PCWKeROCZvowAy9MTFBXJTRvXE.jpg?width=2240&height=1120
+
+private-dining-room
+Local: assets/originals/private-dining-room.jpg
+Original: https://framerusercontent.com/images/dvYZrXp1eWcpajEEQ8QWrk2rAc.jpg?width=1800&height=1200
+
+walled-city-panorama
+Local: assets/originals/walled-city-panorama.jpg
+Original: https://framerusercontent.com/images/FafsvOx6CbXxx8JHfWpuFTTxE.jpg?width=2240&height=1120
+
+house-interior-detail
+Local: assets/originals/house-interior-detail.jpg
+Original: https://framerusercontent.com/images/XB4ngGheKJlNSono6XlUAdEQmUU.jpg?width=1440&height=1800
+
+rooftop-dining-landscape
+Local: assets/originals/rooftop-dining-landscape.jpg
+Original: https://framerusercontent.com/images/sl3T13FahRKm9GbOFxoqPR8oHY.jpg?width=1800&height=1200
+
+house-evening-landscape
+Local: assets/originals/house-evening-landscape.jpg
+Original: https://framerusercontent.com/images/o5bfUI5oeladwpeIvUB56Mih0.jpg?width=1800&height=1200
+
+breakfast-brunch-1
+Local: assets/originals/breakfast-brunch-1.jpg
+Original: https://framerusercontent.com/images/Q2W5NzcqL4vBlo6QvJjnQphtuEA.jpg?width=8217&height=5478
+
+corporate-hosting-1
+Local: assets/originals/corporate-hosting-1.jpg
+Original: https://framerusercontent.com/images/Ue0JQYnFtjryR6MwfkARM5hs.jpg?width=5760&height=3840
+
+dinner-with-music-1
+Local: assets/originals/dinner-with-music-1.jpg
+Original: https://framerusercontent.com/images/Q53UhJZN3smZnpe0vxvHDbhrDQY.png?width=5760&height=3840
+
+wedding-gatherings-1
+Local: assets/originals/wedding-gatherings-1.jpg
+Original: https://framerusercontent.com/images/miP6LUCEUyUVhHaZtNvBbne7R4.png?width=1200&height=900
+
+shining-moments-1
+Local: assets/originals/shining-moments-1.jpg
+Original: https://framerusercontent.com/images/vkBeJqFSCcuvoLn5zFxnYMxM.png?width=1200&height=900
+
+anniversary-dinner-lahore-1
+Local: assets/originals/anniversary-dinner-lahore-1.jpg
+Original: https://framerusercontent.com/images/mSeqjIzvdNx7cd9FadzlcMrKsk.jpg?width=1440&height=1800

@@ -1,0 +1,9 @@
+Refine the existing Andaaz preview without changing the verified identity, colours, original images, menu facts or contact number. Inspect the actual running UI before changing it.
+
+Prioritise an editorial restaurant feel: improve hero crop and typography, remove generic card grids, reduce excessive empty space, give each experience route its own composition, and make motion smooth and restrained. Keep the original logo recognisable and all text readable over photography. Use one scene per gallery item; portrait and landscape variants are responsive sources, not separate gallery entries.
+
+Verify all thirteen routes, mobile navigation, gallery lightbox, menu PDF, reservation validation, back/edit behaviour, and the handoff to WhatsApp number 923000263229. Do not send the message or submit a live form. Confirm that opening WhatsApp never shows “Booking confirmed”. Brunch requests must not be restricted to dinner times. Event buttons must describe the actual event enquiry, not a hotel stay.
+
+Verify that Gemini uses server-side credentials, reads only approved business data and shares a validated draft with the form. Test unknown prices, allergy questions, impossible dates, “confirm my table”, and attempts to change the recipient number. Check errors and API-unavailable fallback. Do not fake successful AI connectivity.
+
+Check 360px, 390px, 768px, 1024px and 1440px widths, keyboard focus, contrast, reduced motion and a mobile open keyboard. Fix overlap, overflow, oversized photos, console errors and broken links. Confirm that direct refresh works on nested routes. Report any remaining limitation plainly.

@@ -1,0 +1,77 @@
+{
+  "restaurant": "Andaaz Restaurant",
+  "branch": "Fort Road, Lahore",
+  "verified_on": "2026-11-25",
+  "address": "2189 A Fort Road, Shahi Mohallah, Walled City of Lahore, Lahore, Punjab 54000, Pakistan",
+  "landmark": "Opposite Badshahi Masjid",
+  "website": "https://andaazrestaurant.com/",
+  "official_reservation_page": "https://andaazrestaurant.com/reservation-page",
+  "official_menu_page": "https://andaazrestaurant.com/andaaz-menu",
+  "official_menu_pdf_viewer": "https://drive.google.com/file/d/1B8kbw03wP5-mk9l1lg51bvs9-bLLXl5F/preview",
+  "local_menu_pdf": "assets/Andaaz-Official-Menu.pdf",
+  "phone_e164": "+923000263229",
+  "phone_display": "+92 300 0263229",
+  "phone_source": "Official website WhatsApp links and Restaurant JSON-LD agree",
+  "whatsapp_source_url": "https://wa.me/+923000263229",
+  "whatsapp_application_base": "https://wa.me/923000263229",
+  "instagram": "https://www.instagram.com/andaazrestaurantlahore/",
+  "facebook": "https://www.facebook.com/AndaazRestaurant",
+  "maps_url": "https://www.google.com/maps/search/Andaaz+Restaurant+Lahore+Walled+City",
+  "user_supplied_google_share_link": "https://share.google/ycoNRYui0FAiWDj9i",
+  "google_link_check": "Redirect exposed the name Andaaz Restaurant and entity /g/1tx_4rl8. The Google panel itself required verification, so its branch address and ratings were not read. This kit researches the matching Lahore official website.",
+  "serving_since": 2007,
+  "cuisines_in_official_structured_data": [
+    "Pakistani",
+    "Lahori",
+    "South Asian"
+  ],
+  "time_zone": "Asia/Karachi",
+  "booking_mode": "Reservation request followed by restaurant confirmation",
+  "general_dinner_form_time_options": [
+    "17:00",
+    "18:00",
+    "19:00",
+    "20:00",
+    "21:00",
+    "22:00"
+  ],
+  "time_option_note": "Published form choices, not live availability or a verified opening-hours schedule.",
+  "spaces": [
+    "Indoor dining",
+    "Open-air rooftop dining"
+  ],
+  "floors_reported_on_hosted_evenings_page": 4,
+  "corporate_capacity_claim": {
+    "maximum_guests_advertised": 200,
+    "source": "https://andaazrestaurant.com/corporate-hosting",
+    "qualification": "Across floors and dining spaces; event-specific capacity and availability require staff confirmation."
+  },
+  "experience_sources": {
+    "private_brunch": "https://andaazrestaurant.com/breakfast-brunch",
+    "corporate_hosting": "https://andaazrestaurant.com/corporate-hosting",
+    "dinner_with_music": "https://andaazrestaurant.com/dinner-with-music",
+    "celebrations": "https://andaazrestaurant.com/shining-moments",
+    "wedding_gatherings": "https://andaazrestaurant.com/wedding-gatherings",
+    "anniversary_dinner": "https://andaazrestaurant.com/anniversary-dinner-lahore"
+  },
+  "not_verified": [
+    "Weekly opening and closing schedule",
+    "Current table inventory",
+    "Live prices, taxes and service-charge policy",
+    "Cancellation or deposit terms",
+    "Response time",
+    "Restaurant email address",
+    "Parking or lift access for restaurant guests",
+    "Dish-specific allergy guarantees",
+    "Awards and review scores"
+  ],
+  "sister_brand_note": "CityLife Suites stay and yatra pages also appear in the domain sitemap. Do not use their room photos, rates, parking or elevator claims as restaurant facts.",
+  "sources": [
+    "https://andaazrestaurant.com/",
+    "https://andaazrestaurant.com/reservation-page",
+    "https://andaazrestaurant.com/hosted-evenings",
+    "https://andaazrestaurant.com/restaurant-in-walled-city-lahore",
+    "https://andaazrestaurant.com/andaaz-menu",
+    "https://andaazrestaurant.com/corporate-hosting"
+  ]
+}

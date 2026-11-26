@@ -1,0 +1,881 @@
+# MASTER DEVELOPMENT PROMPT
+
+## PROJECT: ANDAAZ — INTELLIGENT RESERVATION & AI CONCIERGE MANAGEMENT SYSTEM
+
+Developed by Zavyo AI Studio.
+
+Existing website:
+https://andaaz-restaurant-tau.vercel.app/
+
+## 1. PROJECT OBJECTIVE
+
+Extend the existing Andaaz Restaurant website into a premium, integrated reservation management and AI concierge ecosystem.
+
+The public-facing restaurant website has already been developed. Do not rebuild, replace, or unnecessarily redesign it.
+
+Build a sophisticated, fully functional management dashboard that enables the restaurant owner and manager to manage reservations originating from:
+
+- The existing restaurant website.
+- A WhatsApp AI Reservation Agent powered by n8n and Google Gemini.
+- Manual reservations entered by restaurant staff.
+- An interactive browser-based AI concierge demonstration.
+
+The dashboard must be integration-ready, responsive, visually premium, and suitable for a client-facing demonstration.
+
+## 2. MANDATORY EXISTING PROJECT AUDIT
+
+Before writing new code, inspect the complete existing project.
+
+Identify:
+
+- Current application architecture and framework.
+- Existing routes and navigation.
+- Restaurant branding, colors, typography, and logo.
+- Current reservation form and its fields.
+- Existing reservation submission behavior.
+- Existing state management and data storage.
+- Existing API routes and backend capabilities.
+- Current dependencies and deployment configuration.
+- Existing mobile responsiveness.
+
+Reuse the existing architecture wherever practical.
+
+Do not remove existing website functionality.
+
+Do not modify the public-facing homepage, menu pages, imagery, animations, navigation, or restaurant branding unless a change is essential for reservation integration.
+
+Preserve the existing website experience.
+
+## 3. DESIGN SYSTEM
+
+Create a premium hospitality management dashboard inspired by the existing Andaaz Restaurant branding.
+
+The dashboard should feel like a bespoke enterprise hospitality product rather than a generic admin template.
+
+Design characteristics:
+
+- Luxury heritage-inspired visual identity.
+- Sophisticated typography.
+- Restrained antique gold accents.
+- Elegant neutral backgrounds.
+- Deep, refined contrast colors.
+- High-quality visual hierarchy.
+- Spacious layouts and precise alignment.
+- Subtle micro-interactions.
+- Smooth page transitions.
+- Professional charts and tables.
+- Consistent status indicators.
+- Responsive desktop, tablet, and mobile layouts.
+
+Use the existing website's actual logo, design tokens, and brand colors after inspecting the project.
+
+Avoid excessive gradients, unnecessary glassmorphism, oversized icons, generic stock illustrations, and decorative clutter.
+
+The management dashboard should prioritize usability and operational efficiency.
+
+## 4. APPLICATION ROUTES
+
+Create the following routes, adapting them to the existing router:
+
+- /staff-demo
+- /staff-demo/reservations
+- /staff-demo/calendar
+- /staff-demo/ai-concierge
+- /staff-demo/customers
+- /staff-demo/notifications
+- /staff-demo/analytics
+- /staff-demo/availability
+- /staff-demo/settings
+- /automation-demo
+
+Preserve all existing public website routes.
+
+Add a discreet "Management Demo" link to the public website footer.
+
+Do not add management navigation to the main restaurant customer navigation.
+
+Clearly identify the demonstration workspace and prevent real customer information from being exposed through public demo routes.
+
+## 5. DASHBOARD APPLICATION SHELL
+
+Build a consistent dashboard shell containing:
+
+- Andaaz Restaurant logo.
+- Collapsible sidebar navigation.
+- Executive overview.
+- Global search.
+- Notification indicator.
+- Current date and time in Asia/Karachi timezone.
+- Demo mode indicator.
+- Manager profile menu.
+- Responsive mobile navigation drawer.
+
+The sidebar must contain:
+
+WORKSPACE
+
+- Overview
+- Reservations
+- Reservation Calendar
+- AI Concierge
+- Customers
+- Notifications
+- Analytics
+
+CONFIGURATION
+
+- Availability Settings
+- Automation Settings
+- Demo Centre
+
+Include functional navigation, loading states, empty states, error states, confirmation dialogs, and toast notifications.
+
+No decorative or non-functional buttons.
+
+## 6. MODULE A — EXECUTIVE OVERVIEW
+
+Create an executive overview containing real, dynamically calculated KPIs.
+
+Required metrics:
+
+- Today's reservation requests.
+- Upcoming reservations.
+- Pending approvals.
+- Confirmed reservations.
+- Cancelled reservations.
+- Expected number of guests.
+- Website reservation requests.
+- WhatsApp AI reservation requests.
+- Total AI conversations.
+- After-hours reservation requests.
+- Average AI response time, when measurable.
+- AI reservation conversion rate, when measurable.
+
+Add the following dashboard sections:
+
+- Reservation activity chart.
+- Reservation source breakdown.
+- Booking status distribution.
+- Peak reservation times.
+- Upcoming reservations.
+- Recent AI activity.
+- Pending manager actions.
+- Recent notifications.
+- Quick reservation creation button.
+
+Every KPI must be derived from stored records.
+
+Do not hardcode statistics.
+
+If a metric has insufficient data, display "Not enough data" rather than generating fake results.
+
+Provide a selectable date range for applicable metrics.
+
+## 7. MODULE B — RESERVATION MANAGEMENT
+
+Build a comprehensive reservation management module.
+
+Support:
+
+- Table and mobile card views.
+- Search by guest name, phone number, or booking reference.
+- Filters by date, source, seating preference, guest count, and status.
+- Sorting.
+- Pagination.
+- Reservation details drawer or modal.
+- Manual reservation creation.
+- Reservation editing.
+- Manager approval.
+- Reservation rejection.
+- Cancellation.
+- Rescheduling.
+- Mark as seated.
+- Mark as completed.
+- Mark as no-show.
+- Internal manager notes.
+- Activity history.
+
+Reservation sources:
+
+- Website
+- WhatsApp AI
+- Manual
+- Web AI Demo
+
+Reservation statuses:
+
+- Pending
+- Confirmed
+- Rejected
+- Cancelled
+- Seated
+- Completed
+- No Show
+
+Every new unverified reservation request must initially have Pending status.
+
+Do not automatically confirm availability.
+
+Each reservation should contain:
+
+- Internal database ID.
+- Unique booking reference.
+- Customer full name.
+- Customer contact number.
+- Reservation date.
+- Reservation time.
+- Number of guests.
+- Seating preference.
+- Special occasion.
+- Special requests.
+- Dietary requirements.
+- Reservation source.
+- Current status.
+- Conversation reference, when available.
+- External event reference.
+- Created timestamp.
+- Updated timestamp.
+- Manager notes.
+- Status history.
+
+Generate a booking reference only after successful persistence.
+
+Separate the reservation reference from confirmation status.
+
+All changes must persist and update applicable dashboard analytics.
+
+## 8. MODULE C — RESERVATION CALENDAR
+
+Create a functional reservation calendar.
+
+Include:
+
+- Daily view.
+- Weekly view.
+- Monthly view.
+- Date navigation.
+- Today button.
+- Booking status colors.
+- Guest count per reservation.
+- Seating preference.
+- Reservation details on selection.
+- Filters by status and seating preference.
+
+Display upcoming reservation requests and confirmed bookings.
+
+Show occupancy indicators only when valid restaurant capacity information has been configured.
+
+Allow managers to identify possible scheduling conflicts.
+
+Do not treat overlapping requests as confirmed reservations automatically.
+
+## 9. MODULE D — AI CONCIERGE CENTRE
+
+Create a premium AI Concierge management interface.
+
+The actual conversational AI agent is already being developed externally in n8n using Google Gemini and conversation memory.
+
+Do not create a second independent AI agent or duplicate the existing n8n intelligence.
+
+This module must act as a monitoring and management interface for the external AI automation.
+
+Include:
+
+- AI automation connection status.
+- Conversation list.
+- Customer contact identifier.
+- Conversation source.
+- Conversation timestamps.
+- Customer and assistant messages.
+- Detected customer intent.
+- Reservation linked to conversation.
+- Conversation status.
+- Human handover requests.
+- Unresolved inquiries.
+- AI response latency when available.
+- Last successful automation activity.
+- Integration errors.
+
+Conversation statuses:
+
+- Active
+- Reservation Requested
+- Awaiting Manager
+- Human Handover Requested
+- Resolved
+
+Provide a conversation details panel with the complete available conversation history.
+
+Add an action to mark a conversation for human assistance.
+
+If a real WhatsApp messaging connection is unavailable, clearly label direct message-sending features as unavailable.
+
+Never simulate a successful real WhatsApp message delivery.
+
+## 10. MODULE E — CUSTOMER RECORDS
+
+Create a guest relationship management module.
+
+Display:
+
+- Customer name.
+- Contact number.
+- Total reservation requests.
+- Confirmed bookings.
+- Completed visits.
+- Cancelled reservations.
+- Last reservation date.
+- Upcoming reservations.
+- Seating preferences.
+- Relevant dietary requirements.
+- Previous special occasions.
+- Internal notes.
+
+Link customer profiles to their reservation and conversation histories.
+
+Avoid duplicate customer records where matching normalized contact numbers are available.
+
+Do not collect unnecessary personal information.
+
+Customer information must only be accessible through authorized management interfaces.
+
+## 11. MODULE F — NOTIFICATIONS CENTRE
+
+Create an in-app notifications system.
+
+Notification types:
+
+- New website reservation.
+- New WhatsApp AI reservation.
+- New web AI demo reservation.
+- Pending booking approval.
+- Customer requested a cancellation.
+- Customer requested rescheduling.
+- Human assistance requested.
+- Special occasion booking.
+- Automation integration error.
+
+Provide:
+
+- Read and unread states.
+- Notification counter.
+- Mark as read.
+- Mark all as read.
+- Notification filters.
+- Link to related reservation or conversation.
+- Notification timestamp.
+
+When a reservation is successfully saved, create a corresponding in-app notification.
+
+External email or WhatsApp manager alerts must be handled through the n8n workflow when configured.
+
+Do not display external notification success unless the external service reports successful submission or delivery.
+
+## 12. MODULE G — ANALYTICS & REPORTS
+
+Create a premium analytics dashboard.
+
+Required analytics:
+
+- Total reservations by date.
+- Reservation source comparison.
+- Website vs WhatsApp AI reservation requests.
+- Confirmed vs pending vs cancelled bookings.
+- Total guests.
+- Peak reservation hours.
+- Seating preference distribution.
+- Special occasion bookings.
+- Repeat customers.
+- AI conversation volume.
+- After-hours inquiries.
+- After-hours reservation requests.
+- AI response latency.
+- AI conversation-to-reservation conversion.
+
+Include date range filters:
+
+- Today.
+- Last 7 days.
+- Last 30 days.
+- Custom date range.
+
+All metrics must respect the selected date range.
+
+Clearly define conversion rate as the percentage of eligible AI conversations that generated at least one successfully stored reservation request.
+
+Calculate after-hours metrics using configured restaurant operating hours and Asia/Karachi timezone.
+
+Do not invent operating hours.
+
+If hours are not configured, mark after-hours analytics as unavailable.
+
+Use clearly labeled sample records only when demo data is enabled.
+
+Include a functional CSV export for filtered reservation records.
+
+## 13. MODULE H — AVAILABILITY SETTINGS
+
+Build a configurable reservation settings interface.
+
+Support:
+
+- Restaurant operating days.
+- Opening and closing hours.
+- Reservation time slots.
+- Reservation duration.
+- Rooftop seating capacity.
+- Indoor seating capacity.
+- Maximum guest count.
+- Special closure dates.
+- Manager approval requirements.
+
+All operating rules must be configurable.
+
+Do not invent or preconfigure unverified real restaurant capacities.
+
+For demonstration purposes, clearly labeled sample capacity settings may be provided.
+
+Availability checks are advisory unless a verified production booking policy and concurrency-safe capacity enforcement are implemented.
+
+The default reservation policy must require manager approval.
+
+## 14. MODULE I — AUTOMATION SETTINGS
+
+Build an integration settings interface for the external n8n AI Reservation Agent.
+
+Display:
+
+- n8n integration configuration status.
+- WhatsApp Cloud API connection status.
+- Database connection status.
+- Manager notification configuration status.
+- Last successful integration event.
+- Last failed integration event.
+- Integration activity history.
+- Test connection action.
+
+Use genuine connection checks.
+
+Never show "Connected" solely because a URL has been entered.
+
+Distinguish:
+
+- Not Configured.
+- Configured — Not Verified.
+- Connected.
+- Error.
+- Demo Mode.
+
+Sensitive credentials must never be displayed or stored in browser-accessible application settings.
+
+Store all integration secrets in server-side environment variables.
+
+## 15. CENTRAL DATABASE REQUIREMENTS
+
+Inspect the existing project's storage implementation first.
+
+If a functional shared database already exists, extend and reuse it.
+
+Otherwise, prepare Supabase as the preferred shared backend.
+
+Create database schema and migration SQL for:
+
+- reservations
+- customers
+- conversations
+- conversation_messages
+- notifications
+- activity_logs
+- restaurant_settings
+- integration_events
+
+Include appropriate:
+
+- Primary keys.
+- Foreign keys.
+- Unique constraints.
+- Indexes.
+- Created and updated timestamps.
+- Validation constraints.
+- Row Level Security policies.
+
+Use unique external event identifiers to prevent duplicate reservation creation when n8n retries an event.
+
+Use Asia/Karachi as the operational display timezone.
+
+Store timestamps consistently.
+
+Use authenticated access for management records.
+
+Public customers must not be able to read, modify, or delete other customers' information.
+
+If Supabase credentials are unavailable, provide a functional isolated demo storage adapter and clearly identify it as local demo storage.
+
+Do not claim that localStorage supports cross-device synchronization or external n8n writes.
+
+Keep a consistent repository interface so the demo storage adapter can later be replaced by the shared database without redesigning the dashboard.
+
+## 16. N8N API INTEGRATION
+
+Prepare secure server-side API endpoints or compatible serverless functions.
+
+Required integration contracts:
+
+POST /api/integrations/n8n/reservations
+
+Purpose: Receive structured reservation requests from the external n8n agent.
+
+POST /api/integrations/n8n/conversations
+
+Purpose: Receive conversation events and message history.
+
+POST /api/integrations/n8n/events
+
+Purpose: Receive automation activity, notification results, and integration errors.
+
+GET /api/integrations/n8n/availability
+
+Purpose: Return configured availability information and relevant operational limitations without exposing customer data.
+
+GET /api/integrations/n8n/health
+
+Purpose: Verify the integration service is reachable.
+
+Adapt endpoint implementation to the existing framework and Vercel deployment architecture.
+
+Use server-side integration authentication, such as an authorization bearer token.
+
+Validate all incoming request bodies.
+
+Implement duplicate-event protection.
+
+Return meaningful HTTP status codes.
+
+Return explicit success or error responses.
+
+Never expose Supabase service-role keys, n8n secrets, WhatsApp tokens, or Gemini credentials to the frontend.
+
+Document each endpoint with:
+
+- Required headers.
+- Request schema.
+- Example payload.
+- Success response.
+- Error response.
+- Authentication requirements.
+
+## 17. RESERVATION INTEGRATION PAYLOAD
+
+Support a structured reservation request equivalent to:
+
+```json
+{
+  "external_event_id": "andaaz-demo-reservation-001",
+  "customer_name": "Ahmed Ali",
+  "customer_phone": "+923000000000",
+  "reservation_date": "2026-11-28",
+  "reservation_time": "20:00",
+  "guest_count": 4,
+  "seating_preference": "rooftop",
+  "special_occasion": "Anniversary",
+  "special_requests": "Best possible view of Badshahi Mosque",
+  "dietary_requirements": "None",
+  "source": "whatsapp_ai",
+  "conversation_id": "demo-session-001",
+  "customer_confirmed_details": true,
+  "is_demo": true
+}
+```
+
+This is synthetic demonstration data.
+
+Upon successful processing:
+
+- Validate the request.
+- Check for duplicate external events.
+- Create or identify the customer record.
+- Save the reservation with Pending status.
+- Generate a unique reservation reference.
+- Create an in-app notification.
+- Record integration activity.
+- Return the saved reservation reference and actual status.
+
+Do not claim confirmation or availability before manager approval and required validation.
+
+## 18. MANAGER STATUS UPDATE INTEGRATION
+
+When a manager approves, rejects, cancels, or reschedules a reservation:
+
+- Validate the action.
+- Update the shared reservation database.
+- Record the activity history.
+- Update the dashboard and analytics.
+- Trigger a server-side n8n status-update webhook when configured.
+
+Include an event ID to prevent duplicate downstream notifications.
+
+The external n8n workflow will handle actual customer WhatsApp notifications.
+
+If notification delivery is not configured or fails, display the actual status.
+
+Do not roll back a valid manager decision solely because an external notification failed. Record the notification failure separately and allow retry.
+
+## 19. MODULE J — CLIENT AUTOMATION DEMO CENTRE
+
+Create a dedicated route:
+
+/automation-demo
+
+This is a high-priority client presentation feature.
+
+The page must demonstrate how the website, AI reservation agent, and management dashboard work together.
+
+Create a premium presentation interface with:
+
+SECTION 1 — AI Reservation Concierge
+
+- WhatsApp-inspired conversational interface.
+- Customer message input.
+- AI assistant messages.
+- Typing indicator.
+- Loading and error states.
+- Conversation reset.
+- Suggested test messages.
+
+The chat must be designed to connect to the existing n8n agent through a secure server-side proxy.
+
+Use a stable session ID for each conversation.
+
+Do not hardcode AI responses when the live n8n connection is available.
+
+SECTION 2 — Test on WhatsApp
+
+- Configurable WhatsApp test number.
+- Open WhatsApp button.
+- Clear testing instructions.
+- Connection status.
+
+If a test number is not configured, display "WhatsApp test connection pending".
+
+Do not use or invent the restaurant's official WhatsApp number.
+
+SECTION 3 — Live Reservation Activity
+
+Show recently created demonstration reservations from the central database.
+
+Display:
+
+- Booking reference.
+- Guest name.
+- Guest count.
+- Date and time.
+- Source.
+- Status.
+
+Do not expose production customer records on this page.
+
+SECTION 4 — Demonstration Workflow
+
+Show the operational journey:
+
+Customer Inquiry → AI Conversation → Reservation Details → Validation → Reservation Saved → Manager Notification → Manager Approval → Customer Confirmation.
+
+Update workflow indicators using actual demo events whenever available.
+
+Clearly distinguish simulated steps from connected live steps.
+
+SECTION 5 — Demo Analytics
+
+Show reservation count, AI conversations, source distribution, and pending approvals using actual demonstration records.
+
+Include a reset demo action that affects demonstration data only, with confirmation.
+
+## 20. N8N CHAT PROXY CONTRACT
+
+Prepare a server-side endpoint such as:
+
+POST /api/ai-concierge/chat
+
+Expected browser request:
+
+```json
+{
+  "sessionId": "unique-demo-session-id",
+  "message": "I would like to reserve a rooftop table for four guests.",
+  "source": "web_ai_demo"
+}
+```
+
+Forward the message server-side to the configured n8n chat or webhook endpoint using an adaptable integration contract.
+
+The existing n8n Chat Trigger and AI Agent are already developed. Their precise endpoint format will be provided during integration.
+
+Keep the upstream request mapping configurable.
+
+Return the actual n8n assistant response to the browser.
+
+If n8n is unavailable, show a clear connection error and retry option.
+
+An optional scripted simulation may be provided only if explicitly labeled "Simulated Demo".
+
+Never silently substitute simulated replies for live AI responses.
+
+Add request validation, sensible rate limits, timeouts, and safe error handling.
+
+## 21. EXISTING WEBSITE RESERVATION INTEGRATION
+
+Inspect the existing public reservation form.
+
+Connect its submissions to the same shared reservation service used by the dashboard.
+
+Preserve its current styling and user experience.
+
+When a submission succeeds:
+
+- Persist the reservation.
+- Set source to Website.
+- Set status to Pending.
+- Generate a reservation reference.
+- Notify the manager in-app.
+- Update dashboard analytics.
+- Display a professional acknowledgment to the customer.
+
+Do not claim confirmed availability.
+
+Add or preserve a WhatsApp reservation CTA.
+
+The WhatsApp destination must be configurable and must not route to an unverified number.
+
+## 22. SECURITY & PRIVACY
+
+Implement secure separation between public website features, client demo features, and management features.
+
+Requirements:
+
+- Server-side secrets only.
+- Input validation.
+- Safe error handling.
+- Authorization checks.
+- Protection against duplicate requests.
+- Rate limiting for public integration-facing features.
+- Sanitization of user-generated content.
+- No public access to real customer records.
+- No sensitive data in browser logs.
+- Separate demonstration and production data.
+
+For the client preview, provide an isolated demo workspace containing synthetic records.
+
+Do not expose production management endpoints through an unrestricted demo login bypass.
+
+Production manager access must require authentication.
+
+## 23. DEMONSTRATION DATA
+
+Provide an optional, clearly labeled demo data seeding feature.
+
+Include realistic synthetic examples across:
+
+- Website reservations.
+- WhatsApp AI reservations.
+- Manual reservations.
+- Web AI demo reservations.
+- Different reservation statuses.
+- Rooftop and indoor seating preferences.
+- Special occasions.
+- AI conversations.
+- Notifications.
+
+Use fictional customer records and non-deliverable or clearly synthetic contact information.
+
+Sample AI performance metrics must be traceable to sample conversation records.
+
+Do not hardcode counters independently of their underlying data.
+
+## 24. FUNCTIONAL QUALITY REQUIREMENTS
+
+Every implemented feature must work.
+
+Verify:
+
+- Navigation.
+- Reservation creation.
+- Reservation editing.
+- Reservation filtering.
+- Calendar navigation.
+- Manager approval and rejection.
+- Customer records.
+- Notification states.
+- Analytics calculations.
+- Data persistence.
+- Responsive layout.
+- Integration settings.
+- API validation.
+- Duplicate-event handling.
+- Demo reset.
+- Error handling.
+
+Do not create placeholder buttons or dead-end pages.
+
+Do not label an unfinished integration as operational.
+
+## 25. VERCEL DEPLOYMENT COMPATIBILITY
+
+Maintain compatibility with the current project and Vercel deployment.
+
+Ensure:
+
+- Production build succeeds.
+- All existing website routes remain functional.
+- Dashboard routes load on direct URL navigation.
+- Browser refresh does not break routing.
+- No server-only credentials appear in frontend bundles.
+- No unnecessary dependency conflicts.
+- Server-side API routes or functions deploy correctly.
+- Database and external services are configured through environment variables.
+
+Provide a complete .env.example file containing variable names only, without actual secrets.
+
+Expected variables may include:
+
+- SUPABASE_URL
+- SUPABASE_ANON_KEY
+- SUPABASE_SERVICE_ROLE_KEY
+- N8N_CHAT_WEBHOOK_URL
+- N8N_STATUS_WEBHOOK_URL
+- N8N_INTEGRATION_SECRET
+- WHATSAPP_TEST_NUMBER
+
+Adapt variable names to the actual framework.
+
+## 26. FINAL DELIVERABLES
+
+Do not stop after creating a static dashboard interface.
+
+Implement all feasible functionality within the existing application.
+
+After completing the development, provide a structured implementation summary containing:
+
+1. Existing website audit findings.
+2. New modules developed.
+3. All routes and demonstration links.
+4. Existing website functionality preserved.
+5. Current database and storage implementation.
+6. Database migration SQL or setup instructions.
+7. API endpoint contracts.
+8. Required environment variables.
+9. Exact steps to connect the existing n8n AI agent.
+10. Exact steps to connect manager notification workflows.
+11. Features that are fully functional.
+12. Features using simulated data.
+13. Features awaiting external credentials.
+14. Build and deployment verification.
+15. Known limitations.
+16. End-to-end testing instructions.
+
+The final result must look and feel like a premium, professionally engineered hospitality solution customized for Andaaz Restaurant.
+
+Prioritize the complete reservation journey, manager experience, n8n integration readiness, and client demonstration.
+
+Do not introduce unrelated restaurant ERP features.
+
+Begin by auditing the existing project, then implement the management dashboard and integration architecture without compromising the public-facing website.
