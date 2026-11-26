@@ -266,9 +266,9 @@ export function ReservationDrawer({
                 </dd>
               </div>
               <div>
-                <dt className="text-[#4F5D6A]">Enquiring City</dt>
+                <dt className="text-[#4F5D6A]">Location</dt>
                 <dd className="font-medium text-[#172332] mt-0.5">
-                  {reservation.guestCity || 'Lahore'}
+                  Fort Road, Lahore
                 </dd>
               </div>
               <div>

@@ -188,11 +188,6 @@ function validateAndSanitizeDraftPatch(rawArgs: Record<string, unknown>, current
     }
   }
 
-  if (typeof rawArgs.guestCity === 'string') {
-    const city = rawArgs.guestCity.trim().slice(0, 80);
-    if (city) patch.guestCity = city;
-  }
-
   if (rawArgs.seating !== undefined) {
     if (rawArgs.seating === 'rooftop' || rawArgs.seating === 'indoor' || rawArgs.seating === 'no-preference') {
       patch.seating = rawArgs.seating;
@@ -286,10 +281,6 @@ const updateReservationDraftTool: FunctionDeclaration = {
           'For ordinary dinner: 17:00, 18:00, 19:00, 20:00, 21:00, or 22:00. For private-brunch / corporate-hosting / wedding-gatherings: a readable daytime or evening session string.',
       },
       guests: { type: Type.INTEGER, description: 'Positive integer guest count.' },
-      guestCity: {
-        type: Type.STRING,
-        description: 'Optional city the guest is enquiring from (all enquiries route to Fort Road, Lahore).',
-      },
       seating: { type: Type.STRING, description: 'rooftop, indoor, or no-preference.' },
       name: { type: Type.STRING, description: 'Guest full name.' },
       phone: { type: Type.STRING, description: 'Guest mobile number.' },

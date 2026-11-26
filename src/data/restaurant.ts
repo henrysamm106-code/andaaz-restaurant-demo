@@ -26,7 +26,7 @@ export const RESTAURANT = {
     qualification: 'Across floors and dining spaces; event-specific capacity and availability require staff confirmation.',
   },
   singleLocationNote:
-    'Andaaz Restaurant (andaazrestaurant.com) operates one heritage flagship house on Fort Road, Walled City of Lahore. It does not operate branches in Gulberg, DHA, Karachi, or Islamabad.',
+    'Andaaz Restaurant (andaazrestaurant.com) is officially located at 2189 A Fort Road, Shahi Mohallah, Walled City of Lahore, directly opposite Badshahi Masjid.',
   notVerified: [
     'Weekly opening and closing schedule',
     'Current table inventory',
@@ -57,14 +57,14 @@ export interface RestaurantBranch {
 export const OFFICIAL_BRANCHES: RestaurantBranch[] = [
   {
     id: 'fort-road-lahore',
-    name: 'Fort Road, Walled City of Lahore (Sole Flagship House)',
+    name: 'Andaaz Restaurant — Fort Road, Walled City of Lahore',
     city: 'Lahore',
     address: '2189 A Fort Road, Shahi Mohallah, Walled City of Lahore, Lahore, Punjab 54000, Pakistan',
     landmark: 'Opposite Badshahi Masjid',
     phoneDisplay: '+92 300 0263229',
     phoneE164: '+923000263229',
     whatsappDigits: '923000263229',
-    menuLabel: 'Fort Road, Lahore — Full 3-Page House Menu',
+    menuLabel: 'Fort Road, Lahore — Official Full Menu',
     spacesNote: 'Four floors featuring open-air rooftop terraces and glass-sided indoor dining salons.',
     photoIds: [
       'rooftop-table-landscape',
@@ -74,15 +74,6 @@ export const OFFICIAL_BRANCHES: RestaurantBranch[] = [
     ],
   },
 ];
-
-export const BOOKING_CITY_OPTIONS = [
-  'Lahore',
-  'Islamabad / Rawalpindi',
-  'Karachi',
-  'Multan',
-  'Faisalabad',
-  'Visiting from Abroad',
-] as const;
 
 export const FAQ_ITEMS = [
   {
@@ -124,9 +115,9 @@ export const ROUTE_META: Record<string, RouteMeta> = {
       'Discover the four-floor heritage house on Fort Road opposite Badshahi Masjid, home to Andaaz Restaurant in the Walled City of Lahore since 2007.',
   },
   '/menu': {
-    title: 'Menu Highlights & Official PDF — Andaaz Restaurant, Lahore',
+    title: 'Official Menu & Printed Sheets — Andaaz Restaurant, Fort Road, Lahore',
     description:
-      'Explore verified menu highlights across Tandoor, Karahi, Seafood, Desserts, and Drinks, or view the full three-page official Andaaz Restaurant menu PDF.',
+      'Explore the complete 67-dish official menu of Andaaz Restaurant, Fort Road, Lahore across all six courses, alongside the three original printed menu sheets and official PDF.',
   },
   '/gallery': {
     title: 'Gallery — Andaaz Restaurant, Fort Road, Lahore',

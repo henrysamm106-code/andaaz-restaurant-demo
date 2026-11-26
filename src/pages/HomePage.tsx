@@ -243,20 +243,20 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* 4. The Kitchen: Original Menu Sheets + Full Six-Course Preview */}
+      {/* 4. The Kitchen: Original Menu Sheets + Complete Six-Course Official Lahore Menu */}
       <section className="bg-[#F2EDE3]/70 border-y border-[#172332]/10 py-14 sm:py-20 lg:py-24">
         <div className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start">
-            <motion.div {...SECTION_REVEAL} className="lg:col-span-5 space-y-6">
+            <motion.div {...SECTION_REVEAL} className="lg:col-span-5 space-y-6 lg:sticky lg:top-24">
               <div className="space-y-3">
                 <p className="text-xs uppercase tracking-[0.16em] text-[#7E4D54] font-medium">
-                  The Kitchen · Fort Road, Lahore
+                  Official Menu · Fort Road, Lahore
                 </p>
                 <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-medium leading-[1.08] text-[#172332] text-balance">
-                  Fort Road, Lahore — Six courses from our kitchen.
+                  Fort Road, Lahore — Complete Official Menu.
                 </h2>
                 <p className="text-sm sm:text-base text-[#4F5D6A] leading-relaxed">
-                  Prepared to order at our sole Fort Road heritage house opposite Badshahi Masjid across Tandoori Namonay, Karahi Kay Kamal, accompaniments, sweets, and house teas.
+                  Prepared to order at Andaaz Restaurant opposite Badshahi Masjid in Lahore across all six official courses — Tandoori Namonay, Karahi Kay Kamal, Diigar Lawazmaat, Mashrubaat, Khaas Meetha, and Garam Mashrubaat.
                 </p>
               </div>
 
@@ -299,17 +299,19 @@ export function HomePage() {
                     to="/menu"
                     className="inline-flex items-center gap-2 rounded-xl bg-[#7E4D54] hover:bg-[#693E45] text-[#FAF8F3] px-5 py-3 text-sm font-medium transition-colors"
                   >
-                    Explore Complete Menu <ArrowRight className="h-4 w-4" />
+                    Search &amp; Filter Full Menu <ArrowRight className="h-4 w-4" />
                   </Link>
                 </div>
               </div>
             </motion.div>
 
-            <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-8 pt-2">
+            <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-10 pt-2">
               {FULL_MENU_SECTIONS.map((section, idx) => (
                 <div
                   key={section.id}
-                  className="border-t border-[#172332]/15 pt-5"
+                  className={`border-t border-[#172332]/15 pt-5 ${
+                    section.items.length > 14 ? 'sm:col-span-2' : ''
+                  }`}
                 >
                   <div className="flex items-baseline justify-between gap-4">
                     <h3 className="font-serif text-2xl sm:text-[26px] font-medium text-[#172332]">
@@ -318,18 +320,24 @@ export function HomePage() {
                       </Link>
                     </h3>
                     <span className="text-xs text-[#7E4D54] tabular-nums shrink-0">
-                      0{idx + 1} · {section.items.length} items
+                      0{idx + 1} · {section.items.length} dishes
                     </span>
                   </div>
-                  <p className="mt-1 text-sm text-[#4F5D6A] line-clamp-2">{section.subtitle}</p>
-                  <ul className="mt-4 space-y-1.5 text-sm sm:text-base text-[#172332]">
-                    {section.items.slice(0, 4).map((item) => (
+                  <p className="mt-1 text-sm text-[#4F5D6A]">{section.subtitle}</p>
+                  <ul
+                    className={`mt-4 gap-x-8 text-sm sm:text-[15px] text-[#172332] ${
+                      section.items.length > 14
+                        ? 'grid grid-cols-1 sm:grid-cols-2'
+                        : 'space-y-1'
+                    }`}
+                  >
+                    {section.items.map((item) => (
                       <li
                         key={item.name}
-                        className="py-1 border-b border-[#172332]/8 last:border-b-0 flex items-baseline justify-between gap-3"
+                        className="py-1.5 border-b border-[#172332]/8 flex items-baseline justify-between gap-3"
                       >
                         <span>{item.name}</span>
-                        <span className="text-xs text-[#4F5D6A] tabular-nums">
+                        <span className="text-xs text-[#4F5D6A] tabular-nums shrink-0">
                           {item.printedPrice.toLocaleString('en-US')}
                         </span>
                       </li>

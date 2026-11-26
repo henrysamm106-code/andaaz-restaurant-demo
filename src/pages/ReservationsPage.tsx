@@ -9,7 +9,6 @@ import {
   Phone,
   AlertCircle,
   Edit3,
-  MapPin,
 } from 'lucide-react';
 import { useReservationDraft } from '../context/ReservationContext';
 import {
@@ -28,7 +27,7 @@ import {
   validatePhoneNumber,
 } from '../lib/karachiTime';
 import { EXPERIENCES, type ExperienceSlug } from '../data/experiences';
-import { BOOKING_CITY_OPTIONS, OFFICIAL_BRANCHES, RESTAURANT } from '../data/restaurant';
+import { OFFICIAL_BRANCHES, RESTAURANT } from '../data/restaurant';
 import { EASE_OUT, PAGE_TRANSITION } from '../lib/motion';
 
 const STEPS = [
@@ -147,7 +146,7 @@ export function ReservationsPage() {
           customer_name: draft.name.trim(),
           customer_phone: draft.phone.trim(),
           customer_email: draft.email.trim(),
-          guest_city: draft.guestCity.trim() || 'Lahore',
+          guest_city: 'Lahore',
           reservation_date: draft.date,
           reservation_time: draft.time,
           guest_count: draft.guests,
@@ -233,7 +232,7 @@ export function ReservationsPage() {
 
           <div className="lg:col-span-5 rounded-2xl bg-[#F2EDE3] border border-[#172332]/12 p-5 space-y-2.5">
             <p className="text-[11px] uppercase tracking-[0.16em] text-[#7E4D54] font-medium">
-              Branch &amp; Official Contact Number
+              Official Lahore Location &amp; Contact
             </p>
             {OFFICIAL_BRANCHES.map((branch) => (
               <div key={branch.id} className="space-y-1.5">
@@ -421,56 +420,6 @@ export function ReservationsPage() {
                         )}
                       </div>
                     )}
-
-                    {/* City & Assigned Branch */}
-                    <div className="rounded-xl bg-[#FAF8F3] border border-[#172332]/12 p-4 sm:p-5 space-y-3">
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                        <label
-                          htmlFor="res-guest-city"
-                          className="block text-sm font-medium text-[#172332]"
-                        >
-                          Which city are you enquiring from?
-                        </label>
-                        <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[#7E4D54]">
-                          <MapPin className="h-3.5 w-3.5" />
-                          Routed to: {RESTAURANT.branch}
-                        </span>
-                      </div>
-
-                      <div className="flex flex-wrap gap-2">
-                        {BOOKING_CITY_OPTIONS.map((cityOpt) => {
-                          const selected = draft.guestCity === cityOpt;
-                          return (
-                            <button
-                              key={cityOpt}
-                              type="button"
-                              onClick={() => updateDraft({ guestCity: cityOpt })}
-                              className={`rounded-lg border px-3 py-1.5 text-xs transition-colors min-h-[34px] ${
-                                selected
-                                  ? 'bg-[#172332] text-[#FAF8F3] border-[#172332]'
-                                  : 'bg-white text-[#4F5D6A] border-[#172332]/15 hover:text-[#172332]'
-                              }`}
-                            >
-                              {cityOpt}
-                            </button>
-                          );
-                        })}
-                      </div>
-
-                      <input
-                        id="res-guest-city"
-                        type="text"
-                        maxLength={80}
-                        value={draft.guestCity}
-                        onChange={(e) => updateDraft({ guestCity: e.target.value })}
-                        placeholder="Or type your city (e.g. Lahore, Islamabad, London)"
-                        className="w-full rounded-xl border border-[#172332]/20 bg-white px-4 py-2.5 text-sm text-[#172332] min-h-[42px]"
-                      />
-                      <p className="text-xs text-[#4F5D6A] leading-relaxed">
-                        All reservations from {draft.guestCity.trim() || 'any city'} are handled at our sole location on{' '}
-                        <span className="font-medium text-[#172332]">{RESTAURANT.branch}</span> ({RESTAURANT.phoneDisplay}).
-                      </p>
-                    </div>
 
                     {/* Date & Guest Count */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
@@ -965,33 +914,18 @@ export function ReservationsPage() {
 
               <dl className="space-y-3 text-sm">
                 <div className="flex items-start justify-between gap-4">
-                  <dt className="text-[#4F5D6A]">Branch</dt>
+                  <dt className="text-[#4F5D6A]">Location</dt>
                   <dd className="text-right font-medium text-[#172332]">
                     {RESTAURANT.branch}
                   </dd>
                 </div>
 
                 <div className="flex items-start justify-between gap-4">
-                  <dt className="text-[#4F5D6A]">Branch Phone</dt>
+                  <dt className="text-[#4F5D6A]">Phone / WhatsApp</dt>
                   <dd className="text-right font-medium text-[#7E4D54] tabular-nums">
                     <a href={`tel:${RESTAURANT.phoneE164}`} className="hover:underline">
                       {RESTAURANT.phoneDisplay}
                     </a>
-                  </dd>
-                </div>
-
-                <div className="flex items-start justify-between gap-4">
-                  <dt className="text-[#4F5D6A]">Enquiring City</dt>
-                  <dd className="text-right font-medium text-[#172332]">
-                    {draft.guestCity.trim() || 'Not specified'}
-                    <button
-                      type="button"
-                      onClick={() => goToStep(1)}
-                      aria-label="Edit enquiry city"
-                      className="ml-2 text-[#7E4D54] hover:underline inline-flex items-center"
-                    >
-                      <Edit3 className="h-3.5 w-3.5" />
-                    </button>
                   </dd>
                 </div>
 

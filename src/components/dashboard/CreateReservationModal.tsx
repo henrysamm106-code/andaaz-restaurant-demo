@@ -17,7 +17,6 @@ export function CreateReservationModal({
   const [customerName, setCustomerName] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
   const [customerEmail, setCustomerEmail] = useState('');
-  const [guestCity, setGuestCity] = useState('Lahore');
   const [reservationDate, setReservationDate] = useState(defaultDate || getKarachiTomorrow());
   const [reservationTime, setReservationTime] = useState('20:00');
   const [guestCount, setGuestCount] = useState('4');
@@ -57,7 +56,7 @@ export function CreateReservationModal({
       customerName: customerName.trim(),
       customerPhone: customerPhone.trim(),
       customerEmail: customerEmail.trim(),
-      guestCity: guestCity.trim() || 'Lahore',
+      guestCity: 'Lahore',
       reservationDate,
       reservationTime: reservationTime.trim() || '20:00',
       guestCount: count,
@@ -191,7 +190,7 @@ export function CreateReservationModal({
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-medium text-[#172332] mb-1">
                 Seating Preference
@@ -205,17 +204,6 @@ export function CreateReservationModal({
                 <option value="indoor">Indoor Salon</option>
                 <option value="no-preference">No Preference</option>
               </select>
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-[#172332] mb-1">
-                Enquiring City
-              </label>
-              <input
-                type="text"
-                value={guestCity}
-                onChange={(e) => setGuestCity(e.target.value)}
-                className="w-full rounded-lg border border-[#172332]/20 bg-white px-3 py-2 text-sm text-[#172332]"
-              />
             </div>
             <div>
               <label className="block text-xs font-medium text-[#172332] mb-1">

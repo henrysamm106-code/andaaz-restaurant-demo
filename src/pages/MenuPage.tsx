@@ -57,10 +57,10 @@ export function MenuPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-end">
           <div className="lg:col-span-7 space-y-4">
             <p className="text-xs uppercase tracking-[0.16em] text-[#7E4D54] font-medium">
-              Fort Road, Walled City of Lahore · Sole Flagship House
+              Official Lahore Menu · Fort Road, Walled City of Lahore
             </p>
             <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-medium leading-[1.05] text-[#172332]">
-              Andaaz Menu — Fort Road, Lahore
+              Andaaz Official Menu — Fort Road, Lahore
             </h1>
             <p className="text-base text-[#4F5D6A] leading-relaxed max-w-2xl">
               {MENU_META.scopeNote} {RESTAURANT.singleLocationNote}
@@ -119,7 +119,7 @@ export function MenuPage() {
                 Original Menu Photos · Fort Road, Lahore
               </p>
               <h2 className="font-serif text-2xl sm:text-3xl font-medium text-[#172332] mt-1">
-                Printed Menu Sheets — Fort Road, Lahore House
+                Original Printed Menu Sheets — Fort Road, Lahore
               </h2>
             </div>
             <p className="text-xs sm:text-sm text-[#4F5D6A]">
@@ -333,7 +333,7 @@ export function MenuPage() {
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
               <div>
                 <p className="text-xs uppercase tracking-[0.16em] text-[#7E4D54] font-medium">
-                  Location Photography · Single Heritage House
+                  Lahore Location Photography · Fort Road, Walled City
                 </p>
                 <h2 className="font-serif text-2xl sm:text-3xl font-medium text-[#172332] mt-1">
                   {OFFICIAL_BRANCHES[0].name}

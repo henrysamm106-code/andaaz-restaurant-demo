@@ -28,7 +28,6 @@ function createInitialDraft(): ReservationDraft {
     date: getKarachiTomorrow(),
     time: '20:00',
     guests: 2,
-    guestCity: 'Lahore',
     seating: 'no-preference',
     notes: '',
     name: '',

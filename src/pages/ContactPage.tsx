@@ -29,15 +29,12 @@ export function ContactPage() {
                 <MapPin className="h-5 w-5 text-[#7E4D54] shrink-0 mt-1" />
                 <div className="space-y-1">
                   <h2 className="font-serif text-xl font-medium text-[#172332]">
-                    Address — {RESTAURANT.branch}
+                    Official Location — {RESTAURANT.branch}
                   </h2>
                   <p className="text-sm text-[#4F5D6A] leading-relaxed">
                     {RESTAURANT.address}
                   </p>
                   <p className="text-sm font-medium text-[#172332]">{RESTAURANT.landmark}</p>
-                  <p className="text-xs text-[#4F5D6A] leading-relaxed pt-1">
-                    {RESTAURANT.singleLocationNote}
-                  </p>
                   <a
                     href={RESTAURANT.mapsUrl}
                     target="_blank"
