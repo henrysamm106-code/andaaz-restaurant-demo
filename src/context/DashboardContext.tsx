@@ -385,13 +385,32 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
       const res = await fetch('/api/demo/integrations/test', { method: 'POST' });
       const json = await res.json();
       if (!res.ok || !json.ok) throw new Error(json.message || 'Integration test failed.');
+      const nextStatus = json.integrationStatus as IntegrationStatusSummary;
+      setSnapshot((prev) =>
+        prev
+          ? {
+              ...prev,
+              persistenceError:
+                nextStatus.databaseState === 'error' ? nextStatus.databaseError : null,
+              integrationStatus: nextStatus,
+            }
+          : prev
+      );
       await refreshWorkspace();
-      pushToast({
-        tone: 'info',
-        title: 'Server integration check completed',
-        detail: `Storage mode: ${json.integrationStatus.storageMode}`,
-      });
-      return json.integrationStatus as IntegrationStatusSummary;
+      if (nextStatus.databaseState === 'error') {
+        pushToast({
+          tone: 'error',
+          title: 'Supabase persistence check failed',
+          detail: nextStatus.databaseError || `Storage mode: ${nextStatus.storageMode}`,
+        });
+      } else {
+        pushToast({
+          tone: nextStatus.databaseState === 'connected' ? 'success' : 'info',
+          title: 'Server integration check completed',
+          detail: `Storage mode: ${nextStatus.storageMode} (${nextStatus.databaseState})`,
+        });
+      }
+      return nextStatus;
     } catch (err) {
       pushToast({
         tone: 'error',

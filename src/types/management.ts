@@ -180,6 +180,7 @@ export type IntegrationConnectionState =
 export interface IntegrationStatusSummary {
   storageMode: 'supabase' | 'demo_memory';
   databaseState: IntegrationConnectionState;
+  databaseError: string | null;
   n8nInboundState: IntegrationConnectionState;
   n8nChatProxyState: IntegrationConnectionState;
   n8nStatusWebhookState: IntegrationConnectionState;
@@ -195,6 +196,7 @@ export interface IntegrationStatusSummary {
 export interface WorkspaceSnapshot {
   workspace: 'demo' | 'production';
   storageMode: 'supabase' | 'demo_memory';
+  persistenceError: string | null;
   karachiToday: string;
   karachiNowTime: string;
   reservations: ReservationRecord[];

@@ -121,19 +121,160 @@ export interface IntegrationEventInput {
   isDemo: boolean;
 }
 
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+function isUuid(val?: string | null): val is string {
+  return Boolean(val && UUID_REGEX.test(val.trim()));
+}
+
+function stripEnvValue(raw?: string): string {
+  const trimmed = (raw || '').trim();
+  if (
+    (trimmed.startsWith('"') && trimmed.endsWith('"') && trimmed.length >= 2) ||
+    (trimmed.startsWith("'") && trimmed.endsWith("'") && trimmed.length >= 2)
+  ) {
+    return trimmed.slice(1, -1).trim();
+  }
+  return trimmed;
+}
+
+function normalizeSupabaseUrl(raw?: string): string {
+  let url = stripEnvValue(raw).replace(/\/+$/, '');
+  if (url.toLowerCase().endsWith('/rest/v1')) {
+    url = url.slice(0, -'/rest/v1'.length).replace(/\/+$/, '');
+  }
+  return url;
+}
+
+function inspectSupabaseKeyRole(
+  key: string
+): 'service_role' | 'secret' | 'anon' | 'publishable' | 'unknown' {
+  if (!key) return 'unknown';
+  if (key.startsWith('sb_publishable_')) return 'publishable';
+  if (key.startsWith('sb_secret_')) return 'secret';
+  const parts = key.split('.');
+  if (parts.length === 3) {
+    try {
+      const payload = JSON.parse(Buffer.from(parts[1], 'base64url').toString('utf8')) as {
+        role?: unknown;
+      };
+      if (payload.role === 'anon') return 'anon';
+      if (payload.role === 'service_role') return 'service_role';
+    } catch {
+      return 'unknown';
+    }
+  }
+  return 'unknown';
+}
+
+function redactSensitiveText(input: string): string {
+  return input
+    .replace(/Bearer\s+[A-Za-z0-9._-]+/gi, 'Bearer [REDACTED]')
+    .replace(/eyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+/g, '[REDACTED_JWT]')
+    .replace(/sb_(?:secret|publishable)_[A-Za-z0-9_-]+/g, '[REDACTED_KEY]')
+    .replace(/https?:\/\/[^\s'"]+/gi, '[SUPABASE_HOST]')
+    .trim();
+}
+
+function formatSanitizedSupabaseError(err: unknown): string {
+  const e = err as {
+    code?: unknown;
+    status?: unknown;
+    statusCode?: unknown;
+    message?: unknown;
+    details?: unknown;
+    hint?: unknown;
+    cause?: { code?: unknown; message?: unknown };
+  };
+
+  const code = e?.code
+    ? String(e.code)
+    : e?.cause?.code
+      ? String(e.cause.code)
+      : e?.status
+        ? `HTTP_${e.status}`
+        : e?.statusCode
+          ? `HTTP_${e.statusCode}`
+          : null;
+
+  const rawMessage =
+    typeof e?.message === 'string' && e.message.trim()
+      ? e.message
+      : typeof e?.cause?.message === 'string' && e.cause.message.trim()
+        ? e.cause.message
+        : err instanceof Error
+          ? err.message
+          : 'Unknown database error';
+
+  const safeMsg = redactSensitiveText(rawMessage).slice(0, 220);
+  const safeHint =
+    typeof e?.hint === 'string' && e.hint.trim()
+      ? redactSensitiveText(e.hint).slice(0, 120)
+      : '';
+
+  let guidance = '';
+  const lower = `${code || ''} ${safeMsg}`.toLowerCase();
+  if (lower.includes('pgrst205') || lower.includes('42p01') || lower.includes('could not find the table')) {
+    guidance = ' — Run supabase/migrations/001_andaaz_schema.sql in the Supabase SQL Editor on schema public.';
+  } else if (lower.includes('42501') || lower.includes('row-level security') || lower.includes('permission denied')) {
+    guidance = ' — Verify SUPABASE_SERVICE_ROLE_KEY is the server service_role/secret key (not the anon key).';
+  } else if (lower.includes('invalid api key') || lower.includes('http_401') || lower.includes('jwt')) {
+    guidance = ' — Verify SUPABASE_SERVICE_ROLE_KEY matches the SUPABASE_URL project.';
+  } else if (lower.includes('fetch failed') || lower.includes('enotfound') || lower.includes('econnrefused')) {
+    guidance = ' — Verify SUPABASE_URL is the exact https://<project-ref>.supabase.co Project URL and reachable.';
+  }
+
+  const prefix = code ? `[${code}] ` : '';
+  const hintSuffix = safeHint ? ` (${safeHint})` : '';
+  return `${prefix}${safeMsg}${hintSuffix}${guidance}`;
+}
+
+function logSupabaseError(operation: string, err: unknown): string {
+  const safeSummary = formatSanitizedSupabaseError(err);
+  console.error(`[Supabase:${operation}] ${safeSummary}`);
+  return safeSummary;
+}
+
+function validateSupabaseEnvConfig(url: string, key: string): string | null {
+  if (!url || !key) return null;
+
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    return 'Invalid SUPABASE_URL format (expected https://<project-ref>.supabase.co).';
+  }
+
+  if (!['https:', 'http:'].includes(parsed.protocol)) {
+    return 'Invalid SUPABASE_URL protocol (expected https://).';
+  }
+
+  if (parsed.hostname === 'supabase.com' && parsed.pathname.includes('/dashboard')) {
+    return 'SUPABASE_URL appears to be the Supabase Dashboard link instead of the Project API URL (https://<project-ref>.supabase.co).';
+  }
+
+  const role = inspectSupabaseKeyRole(key);
+  if (role === 'anon' || role === 'publishable') {
+    return 'SUPABASE_SERVICE_ROLE_KEY is a public anon/publishable key; server persistence requires the service_role or secret key.';
+  }
+
+  return null;
+}
+
 function getEnvConfig() {
-  const supabaseUrl = (process.env.SUPABASE_URL || '').trim();
-  const supabaseServiceKey = (process.env.SUPABASE_SERVICE_ROLE_KEY || '').trim();
-  const n8nChatUrl = (process.env.N8N_CHAT_WEBHOOK_URL || '').trim();
-  const n8nStatusUrl = (process.env.N8N_STATUS_WEBHOOK_URL || '').trim();
-  const n8nSecret = (process.env.N8N_INTEGRATION_SECRET || '').trim();
-  const whatsappTestRaw = (process.env.WHATSAPP_TEST_NUMBER || '').trim().replace(/\D/g, '');
-  const whatsappCloudFlag = (process.env.WHATSAPP_CLOUD_API_CONFIGURED || '').trim().toLowerCase() === 'true';
+  const supabaseUrl = normalizeSupabaseUrl(process.env.SUPABASE_URL);
+  const supabaseServiceKey = stripEnvValue(process.env.SUPABASE_SERVICE_ROLE_KEY);
+  const n8nChatUrl = stripEnvValue(process.env.N8N_CHAT_WEBHOOK_URL);
+  const n8nStatusUrl = stripEnvValue(process.env.N8N_STATUS_WEBHOOK_URL);
+  const n8nSecret = stripEnvValue(process.env.N8N_INTEGRATION_SECRET);
+  const whatsappTestRaw = stripEnvValue(process.env.WHATSAPP_TEST_NUMBER).replace(/\D/g, '');
+  const whatsappCloudFlag = stripEnvValue(process.env.WHATSAPP_CLOUD_API_CONFIGURED).toLowerCase() === 'true';
 
   return {
     supabaseUrl,
     supabaseServiceKey,
     supabaseConfigured: Boolean(supabaseUrl && supabaseServiceKey),
+    supabaseValidationError: validateSupabaseEnvConfig(supabaseUrl, supabaseServiceKey),
     n8nChatUrl,
     n8nStatusUrl,
     n8nSecret,
@@ -144,30 +285,98 @@ function getEnvConfig() {
 
 class MemoryAndSupabaseStore {
   private supabase: SupabaseClient | null = null;
+  private supabaseConfiguredMode = false;
+  private supabaseInitError: string | null = null;
   private customers: CustomerRecord[] = [];
   private reservations: ReservationRecord[] = [];
   private conversations: ConversationRecord[] = [];
   private notifications: NotificationRecord[] = [];
   private activityLogs: ActivityLogRecord[] = [];
   private integrationEvents: IntegrationEventRecord[] = [];
+  private diagnosticEventsFallback: IntegrationEventRecord[] = [];
   private settings: RestaurantSettingsRecord = createDefaultSettings();
   private lastVerifiedDbState: IntegrationConnectionState | null = null;
+  private lastDbError: string | null = null;
   private lastVerifiedN8nChatState: IntegrationConnectionState | null = null;
   private lastVerifiedN8nStatusState: IntegrationConnectionState | null = null;
 
   constructor() {
     const env = getEnvConfig();
+    this.supabaseConfiguredMode = env.supabaseConfigured;
+
     if (env.supabaseConfigured) {
-      this.supabase = createClient(env.supabaseUrl, env.supabaseServiceKey, {
-        auth: { persistSession: false, autoRefreshToken: false },
-      });
+      if (env.supabaseValidationError) {
+        this.supabaseInitError = env.supabaseValidationError;
+        this.lastVerifiedDbState = 'error';
+        this.lastDbError = env.supabaseValidationError;
+        console.error(`[Supabase:init] ${env.supabaseValidationError}`);
+      } else {
+        try {
+          this.supabase = createClient(env.supabaseUrl, env.supabaseServiceKey, {
+            auth: { persistSession: false, autoRefreshToken: false },
+          });
+        } catch (err) {
+          const msg = logSupabaseError('init', err);
+          this.supabaseInitError = msg;
+          this.lastVerifiedDbState = 'error';
+          this.lastDbError = msg;
+        }
+      }
+      // Strictly never seed synthetic demo arrays into memory when Supabase mode is active
+      return;
     }
+
     const { dateStr } = getKarachiDateAndTime();
     this.seedDemoInMemory(dateStr);
   }
 
   getStorageMode(): 'supabase' | 'demo_memory' {
-    return this.supabase ? 'supabase' : 'demo_memory';
+    return this.supabaseConfiguredMode ? 'supabase' : 'demo_memory';
+  }
+
+  private pushFallbackDiagnosticEvent(rec: IntegrationEventRecord) {
+    this.diagnosticEventsFallback.unshift(rec);
+    if (this.diagnosticEventsFallback.length > 20) {
+      this.diagnosticEventsFallback.length = 20;
+    }
+  }
+
+  private async verifyDatabaseConnection(): Promise<{ ok: boolean; error: string | null }> {
+    if (!this.supabaseConfiguredMode) {
+      return { ok: true, error: null };
+    }
+    if (this.supabaseInitError || !this.supabase) {
+      const msg =
+        this.supabaseInitError || 'Supabase client is not initialized despite environment configuration.';
+      this.lastVerifiedDbState = 'error';
+      this.lastDbError = msg;
+      return { ok: false, error: msg };
+    }
+
+    try {
+      const [settingsProbe, reservationsProbe] = await Promise.all([
+        this.supabase.from('restaurant_settings').select('id').limit(1),
+        this.supabase.from('reservations').select('id').limit(1),
+      ]);
+
+      const firstErr = settingsProbe.error || reservationsProbe.error;
+      if (firstErr) {
+        const msg = logSupabaseError('health_check', firstErr);
+        this.lastVerifiedDbState = 'error';
+        this.lastDbError = msg;
+        return { ok: false, error: msg };
+      }
+
+      // Empty tables return data: [] and error: null — valid connected state
+      this.lastVerifiedDbState = 'connected';
+      this.lastDbError = null;
+      return { ok: true, error: null };
+    } catch (err) {
+      const msg = logSupabaseError('health_check', err);
+      this.lastVerifiedDbState = 'error';
+      this.lastDbError = msg;
+      return { ok: false, error: msg };
+    }
   }
 
   private seedDemoInMemory(karachiToday: string) {
@@ -184,15 +393,34 @@ class MemoryAndSupabaseStore {
     ];
   }
 
+  private assertSupabaseReady(): SupabaseClient {
+    if (this.supabaseInitError || !this.supabase) {
+      throw new Error(
+        this.supabaseInitError || 'Supabase persistence is configured but client failed to initialize.'
+      );
+    }
+    return this.supabase;
+  }
+
   async resetDemoWorkspace(reseedSample = true): Promise<void> {
     const { dateStr } = getKarachiDateAndTime();
-    if (this.supabase) {
-      await this.supabase.from('notifications').delete().eq('is_demo', true);
-      await this.supabase.from('activity_logs').delete().eq('is_demo', true);
-      await this.supabase.from('integration_events').delete().eq('is_demo', true);
-      await this.supabase.from('conversations').delete().eq('is_demo', true);
-      await this.supabase.from('reservations').delete().eq('is_demo', true);
-      await this.supabase.from('customers').delete().eq('is_demo', true);
+    if (this.supabaseConfiguredMode) {
+      const client = this.assertSupabaseReady();
+      const tables = [
+        'notifications',
+        'activity_logs',
+        'integration_events',
+        'conversations',
+        'reservations',
+        'customers',
+      ] as const;
+
+      for (const table of tables) {
+        const { error } = await client.from(table).delete().eq('is_demo', true);
+        if (error) {
+          throw new Error(logSupabaseError(`reset_delete.${table}`, error));
+        }
+      }
 
       if (reseedSample) {
         const dataset = buildSyntheticDemoDataset(dateStr);
@@ -214,9 +442,9 @@ class MemoryAndSupabaseStore {
   }
 
   private async insertSeedToSupabase(dataset: ReturnType<typeof buildSyntheticDemoDataset>) {
-    if (!this.supabase) return;
+    const client = this.assertSupabaseReady();
     if (dataset.customers.length > 0) {
-      await this.supabase.from('customers').insert(
+      const { error } = await client.from('customers').insert(
         dataset.customers.map((c) => ({
           id: c.id,
           full_name: c.fullName,
@@ -232,9 +460,10 @@ class MemoryAndSupabaseStore {
           updated_at: c.updatedAt,
         }))
       );
+      if (error) throw new Error(logSupabaseError('seed.customers', error));
     }
     if (dataset.reservations.length > 0) {
-      await this.supabase.from('reservations').insert(
+      const { error } = await client.from('reservations').insert(
         dataset.reservations.map((r) => ({
           id: r.id,
           booking_reference: r.bookingReference,
@@ -263,9 +492,10 @@ class MemoryAndSupabaseStore {
           updated_at: r.updatedAt,
         }))
       );
+      if (error) throw new Error(logSupabaseError('seed.reservations', error));
     }
     if (dataset.conversations.length > 0) {
-      await this.supabase.from('conversations').insert(
+      const { error: convErr } = await client.from('conversations').insert(
         dataset.conversations.map((cv) => ({
           id: cv.id,
           external_session_id: cv.externalSessionId,
@@ -283,6 +513,7 @@ class MemoryAndSupabaseStore {
           updated_at: cv.updatedAt,
         }))
       );
+      if (convErr) throw new Error(logSupabaseError('seed.conversations', convErr));
       const allMessages = dataset.conversations.flatMap((cv) =>
         cv.messages.map((m) => ({
           id: m.id,
@@ -295,11 +526,12 @@ class MemoryAndSupabaseStore {
         }))
       );
       if (allMessages.length > 0) {
-        await this.supabase.from('conversation_messages').insert(allMessages);
+        const { error: msgErr } = await client.from('conversation_messages').insert(allMessages);
+        if (msgErr) throw new Error(logSupabaseError('seed.conversation_messages', msgErr));
       }
     }
     if (dataset.notifications.length > 0) {
-      await this.supabase.from('notifications').insert(
+      const { error } = await client.from('notifications').insert(
         dataset.notifications.map((n) => ({
           id: n.id,
           type: n.type,
@@ -312,9 +544,10 @@ class MemoryAndSupabaseStore {
           created_at: n.createdAt,
         }))
       );
+      if (error) throw new Error(logSupabaseError('seed.notifications', error));
     }
     if (dataset.activityLogs.length > 0) {
-      await this.supabase.from('activity_logs').insert(
+      const { error } = await client.from('activity_logs').insert(
         dataset.activityLogs.map((a) => ({
           id: a.id,
           entity_type: a.entityType,
@@ -326,9 +559,10 @@ class MemoryAndSupabaseStore {
           created_at: a.createdAt,
         }))
       );
+      if (error) throw new Error(logSupabaseError('seed.activity_logs', error));
     }
     if (dataset.integrationEvents.length > 0) {
-      await this.supabase.from('integration_events').insert(
+      const { error } = await client.from('integration_events').insert(
         dataset.integrationEvents.map((e) => ({
           id: e.id,
           external_event_id: e.externalEventId,
@@ -342,6 +576,7 @@ class MemoryAndSupabaseStore {
           created_at: e.createdAt,
         }))
       );
+      if (error) throw new Error(logSupabaseError('seed.integration_events', error));
     }
   }
 
@@ -399,32 +634,41 @@ class MemoryAndSupabaseStore {
   }
 
   async getSettings(): Promise<RestaurantSettingsRecord> {
-    if (this.supabase) {
-      const { data, error } = await this.supabase
+    if (this.supabaseConfiguredMode) {
+      const client = this.assertSupabaseReady();
+      const { data, error } = await client
         .from('restaurant_settings')
         .select('*')
         .eq('id', 'default')
         .maybeSingle();
-      if (!error && data) {
-        return {
-          id: String(data.id),
-          operatingDays: Array.isArray(data.operating_days) ? data.operating_days.map(String) : [],
-          openingTime: data.opening_time ? String(data.opening_time) : null,
-          closingTime: data.closing_time ? String(data.closing_time) : null,
-          hoursConfigured: Boolean(data.hours_configured),
-          timeSlots: Array.isArray(data.time_slots) ? data.time_slots.map(String) : [],
-          reservationDurationMinutes: Number(data.reservation_duration_minutes || 120),
-          rooftopCapacity: data.rooftop_capacity ? Number(data.rooftop_capacity) : null,
-          indoorCapacity: data.indoor_capacity ? Number(data.indoor_capacity) : null,
-          maxGuestCount: data.max_guest_count ? Number(data.max_guest_count) : null,
-          capacityConfigured: Boolean(data.capacity_configured),
-          capacityIsSample: Boolean(data.capacity_is_sample),
-          closureDates: Array.isArray(data.closure_dates) ? data.closure_dates.map(String) : [],
-          requireManagerApproval: Boolean(data.require_manager_approval),
-          n8nOutboundEnabled: Boolean(data.n8n_outbound_enabled),
-          updatedAt: String(data.updated_at),
-        };
+
+      if (error) {
+        throw new Error(logSupabaseError('getSettings', error));
       }
+
+      // Empty restaurant_settings table (no 'default' row yet) is valid — return default settings, NOT error
+      if (!data) {
+        return createDefaultSettings();
+      }
+
+      return {
+        id: String(data.id),
+        operatingDays: Array.isArray(data.operating_days) ? data.operating_days.map(String) : [],
+        openingTime: data.opening_time ? String(data.opening_time) : null,
+        closingTime: data.closing_time ? String(data.closing_time) : null,
+        hoursConfigured: Boolean(data.hours_configured),
+        timeSlots: Array.isArray(data.time_slots) ? data.time_slots.map(String) : [],
+        reservationDurationMinutes: Number(data.reservation_duration_minutes || 120),
+        rooftopCapacity: data.rooftop_capacity ? Number(data.rooftop_capacity) : null,
+        indoorCapacity: data.indoor_capacity ? Number(data.indoor_capacity) : null,
+        maxGuestCount: data.max_guest_count ? Number(data.max_guest_count) : null,
+        capacityConfigured: Boolean(data.capacity_configured),
+        capacityIsSample: Boolean(data.capacity_is_sample),
+        closureDates: Array.isArray(data.closure_dates) ? data.closure_dates.map(String) : [],
+        requireManagerApproval: Boolean(data.require_manager_approval),
+        n8nOutboundEnabled: Boolean(data.n8n_outbound_enabled),
+        updatedAt: String(data.updated_at),
+      };
     }
     return this.settings;
   }
@@ -441,8 +685,9 @@ class MemoryAndSupabaseStore {
       updatedAt: new Date().toISOString(),
     };
 
-    if (this.supabase) {
-      await this.supabase.from('restaurant_settings').upsert({
+    if (this.supabaseConfiguredMode) {
+      const client = this.assertSupabaseReady();
+      const { error } = await client.from('restaurant_settings').upsert({
         id: 'default',
         operating_days: next.operatingDays,
         opening_time: next.openingTime,
@@ -460,6 +705,9 @@ class MemoryAndSupabaseStore {
         n8n_outbound_enabled: next.n8nOutboundEnabled,
         updated_at: next.updatedAt,
       });
+      if (error) {
+        throw new Error(logSupabaseError('updateSettings', error));
+      }
     } else {
       this.settings = next;
     }
@@ -480,13 +728,32 @@ class MemoryAndSupabaseStore {
     return next;
   }
 
-  async getIntegrationStatus(isDemoWorkspace: boolean): Promise<IntegrationStatusSummary> {
+  async getIntegrationStatus(
+    isDemoWorkspace: boolean,
+    options?: { skipProbe?: boolean; preloadedEvents?: IntegrationEventRecord[] }
+  ): Promise<IntegrationStatusSummary> {
     const env = getEnvConfig();
-    const events = await this.listIntegrationEvents(isDemoWorkspace);
+
+    // Perform a live verification if Supabase is configured and this serverless instance has not verified yet
+    if (this.supabaseConfiguredMode && !options?.skipProbe && this.lastVerifiedDbState === null) {
+      await this.verifyDatabaseConnection();
+    }
+
+    let events: IntegrationEventRecord[] = [];
+    if (options?.preloadedEvents) {
+      events = options.preloadedEvents;
+    } else {
+      try {
+        events = await this.listIntegrationEvents(isDemoWorkspace);
+      } catch {
+        events = [...this.diagnosticEventsFallback.filter((e) => e.isDemo === isDemoWorkspace)];
+      }
+    }
+
     const lastSuccess = events.find((e) => e.status === 'success') ?? null;
     const lastFailed = events.find((e) => e.status === 'failed') ?? null;
 
-    const databaseState: IntegrationConnectionState = env.supabaseConfigured
+    const databaseState: IntegrationConnectionState = this.supabaseConfiguredMode
       ? this.lastVerifiedDbState || 'configured_unverified'
       : isDemoWorkspace
         ? 'demo_mode'
@@ -521,6 +788,7 @@ class MemoryAndSupabaseStore {
     return {
       storageMode: this.getStorageMode(),
       databaseState,
+      databaseError: this.supabaseConfiguredMode && databaseState === 'error' ? this.lastDbError : null,
       n8nInboundState,
       n8nChatProxyState,
       n8nStatusWebhookState,
@@ -537,33 +805,19 @@ class MemoryAndSupabaseStore {
   async testIntegrations(isDemoWorkspace: boolean): Promise<IntegrationStatusSummary> {
     const env = getEnvConfig();
 
-    if (this.supabase) {
-      try {
-        const { error } = await this.supabase.from('restaurant_settings').select('id').limit(1);
-        this.lastVerifiedDbState = error ? 'error' : 'connected';
-        await this.recordIntegrationEvent({
-          eventType: 'health_check.supabase',
-          source: 'dashboard',
-          status: error ? 'failed' : 'success',
-          httpStatus: error ? 500 : 200,
-          summary: error
-            ? 'Supabase connection test failed.'
-            : 'Supabase database connection verified.',
-          errorMessage: error ? error.message : null,
-          isDemo: isDemoWorkspace,
-        });
-      } catch (err) {
-        this.lastVerifiedDbState = 'error';
-        await this.recordIntegrationEvent({
-          eventType: 'health_check.supabase',
-          source: 'dashboard',
-          status: 'failed',
-          httpStatus: 500,
-          summary: 'Supabase connection threw an exception.',
-          errorMessage: err instanceof Error ? err.message : 'Unknown error',
-          isDemo: isDemoWorkspace,
-        });
-      }
+    if (this.supabaseConfiguredMode) {
+      const probe = await this.verifyDatabaseConnection();
+      await this.recordIntegrationEvent({
+        eventType: 'health_check.supabase',
+        source: 'dashboard',
+        status: probe.ok ? 'success' : 'failed',
+        httpStatus: probe.ok ? 200 : 500,
+        summary: probe.ok
+          ? 'Supabase database connection verified.'
+          : 'Supabase connection test failed.',
+        errorMessage: probe.error,
+        isDemo: isDemoWorkspace,
+      });
     }
 
     if (env.n8nChatUrl) {
@@ -641,7 +895,7 @@ class MemoryAndSupabaseStore {
       }
     }
 
-    return this.getIntegrationStatus(isDemoWorkspace);
+    return this.getIntegrationStatus(isDemoWorkspace, { skipProbe: true });
   }
 
   private async upsertCustomer(params: {
@@ -656,13 +910,18 @@ class MemoryAndSupabaseStore {
     const normalized = normalizePhone(params.phoneDisplay);
     const now = new Date().toISOString();
 
-    if (this.supabase) {
-      const { data: existing } = await this.supabase
+    if (this.supabaseConfiguredMode) {
+      const client = this.assertSupabaseReady();
+      const { data: existing, error: lookupError } = await client
         .from('customers')
         .select('*')
         .eq('phone_normalized', normalized)
         .eq('is_demo', params.isDemo)
         .maybeSingle();
+
+      if (lookupError) {
+        throw new Error(logSupabaseError('upsertCustomer.lookup', lookupError));
+      }
 
       if (existing) {
         const existingMapped = this.mapSupabaseCustomer(existing);
@@ -680,17 +939,20 @@ class MemoryAndSupabaseStore {
             params.dietary?.trim() || existingMapped.dietaryRequirements || null,
           previous_occasions: Array.from(occasions),
         };
-        const { data: updated } = await this.supabase
+        const { data: updated, error: updateError } = await client
           .from('customers')
           .update(updatedPatch)
           .eq('id', existingMapped.id)
           .select('*')
           .single();
+        if (updateError) {
+          throw new Error(logSupabaseError('upsertCustomer.update', updateError));
+        }
         return this.mapSupabaseCustomer(updated || existing);
       }
 
       const id = crypto.randomUUID();
-      const { data: created, error } = await this.supabase
+      const { data: created, error } = await client
         .from('customers')
         .insert({
           id,
@@ -706,7 +968,7 @@ class MemoryAndSupabaseStore {
         })
         .select('*')
         .single();
-      if (error) throw new Error(error.message);
+      if (error) throw new Error(logSupabaseError('upsertCustomer.insert', error));
       return this.mapSupabaseCustomer(created);
     }
 
@@ -808,8 +1070,9 @@ class MemoryAndSupabaseStore {
       updatedAt: now,
     };
 
-    if (this.supabase) {
-      const { data, error } = await this.supabase
+    if (this.supabaseConfiguredMode) {
+      const client = this.assertSupabaseReady();
+      const { data, error } = await client
         .from('reservations')
         .insert({
           id: record.id,
@@ -837,15 +1100,20 @@ class MemoryAndSupabaseStore {
         })
         .select('*')
         .single();
-      if (error) throw new Error(error.message);
+      if (error) throw new Error(logSupabaseError('createReservation.insert', error));
       Object.assign(record, this.mapSupabaseReservation(data));
     } else {
       this.reservations.unshift(record);
     }
 
     // Link conversation if externalSessionId or internal conversation id was supplied
+    let resolvedConversationUuid: string | null = null;
     if (input.conversationId) {
-      await this.linkConversationToReservation(input.conversationId, record.id, input.isDemo);
+      resolvedConversationUuid = await this.linkConversationToReservation(
+        input.conversationId,
+        record.id,
+        input.isDemo
+      );
     }
 
     // Create source-specific in-app notification
@@ -863,7 +1131,7 @@ class MemoryAndSupabaseStore {
       title: `New Pending Request · ${record.bookingReference}`,
       message: `${record.customerName} requested ${record.guestCount} guests on ${record.reservationDate} (${record.reservationTime}) via ${record.source.replace('_', ' ')}.`,
       reservationId: record.id,
-      conversationId: record.conversationId,
+      conversationId: resolvedConversationUuid,
       isDemo: record.isDemo,
     });
 
@@ -884,25 +1152,34 @@ class MemoryAndSupabaseStore {
   }
 
   private async findReservationByExternalEventId(extId: string): Promise<ReservationRecord | null> {
-    if (this.supabase) {
-      const { data } = await this.supabase
+    if (this.supabaseConfiguredMode) {
+      const client = this.assertSupabaseReady();
+      const { data, error } = await client
         .from('reservations')
         .select('*')
         .eq('external_event_id', extId)
         .maybeSingle();
+      if (error) {
+        throw new Error(logSupabaseError('findReservationByExternalEventId', error));
+      }
       return data ? this.mapSupabaseReservation(data) : null;
     }
     return this.reservations.find((r) => r.externalEventId === extId) ?? null;
   }
 
   async getReservationById(id: string, isDemo: boolean): Promise<ReservationRecord | null> {
-    if (this.supabase) {
-      const { data } = await this.supabase
+    if (this.supabaseConfiguredMode) {
+      const client = this.assertSupabaseReady();
+      if (!isUuid(id)) return null;
+      const { data, error } = await client
         .from('reservations')
         .select('*')
         .eq('id', id)
         .eq('is_demo', isDemo)
         .maybeSingle();
+      if (error) {
+        throw new Error(logSupabaseError('getReservationById', error));
+      }
       return data ? this.mapSupabaseReservation(data) : null;
     }
     return this.reservations.find((r) => r.id === id && r.isDemo === isDemo) ?? null;
@@ -965,8 +1242,9 @@ class MemoryAndSupabaseStore {
     };
 
     // Persist manager decision FIRST (never rolled back if outbound webhook fails)
-    if (this.supabase) {
-      const { error } = await this.supabase
+    if (this.supabaseConfiguredMode) {
+      const client = this.assertSupabaseReady();
+      const { error } = await client
         .from('reservations')
         .update({
           customer_name: updated.customerName,
@@ -986,7 +1264,7 @@ class MemoryAndSupabaseStore {
         })
         .eq('id', updated.id)
         .eq('is_demo', isDemo);
-      if (error) throw new Error(error.message);
+      if (error) throw new Error(logSupabaseError('updateReservation', error));
     } else {
       const idx = this.reservations.findIndex((r) => r.id === updated.id);
       if (idx >= 0) this.reservations[idx] = updated;
@@ -1124,7 +1402,7 @@ class MemoryAndSupabaseStore {
         title: `Outbound Webhook Failed · ${reservation.bookingReference}`,
         message: `Reservation status saved (${reservation.status}), but n8n notification failed: ${msg}`,
         reservationId: reservation.id,
-        conversationId: reservation.conversationId,
+        conversationId: isUuid(reservation.conversationId) ? reservation.conversationId : null,
         isDemo: reservation.isDemo,
       });
     }
@@ -1135,14 +1413,18 @@ class MemoryAndSupabaseStore {
     status: ReservationRecord['lastOutboundNotificationStatus'],
     eventId: string
   ) {
-    if (this.supabase) {
-      await this.supabase
+    if (this.supabaseConfiguredMode) {
+      const client = this.assertSupabaseReady();
+      const { error } = await client
         .from('reservations')
         .update({
           last_outbound_notification_status: status,
           last_outbound_event_id: eventId,
         })
         .eq('id', id);
+      if (error) {
+        logSupabaseError('updateOutboundStatusField', error);
+      }
     } else {
       const rec = this.reservations.find((r) => r.id === id);
       if (rec) {
@@ -1156,37 +1438,58 @@ class MemoryAndSupabaseStore {
     convIdentifier: string,
     reservationId: string,
     isDemo: boolean
-  ) {
-    if (this.supabase) {
-      await this.supabase
+  ): Promise<string | null> {
+    if (this.supabaseConfiguredMode) {
+      const client = this.assertSupabaseReady();
+      let query = client
         .from('conversations')
         .update({ linked_reservation_id: reservationId, status: 'awaiting_manager' })
-        .or(`id.eq.${convIdentifier},external_session_id.eq.${convIdentifier}`)
         .eq('is_demo', isDemo);
-    } else {
-      const conv = this.conversations.find(
-        (c) => c.isDemo === isDemo && (c.id === convIdentifier || c.externalSessionId === convIdentifier)
-      );
-      if (conv) {
-        conv.linkedReservationId = reservationId;
-        const res = this.reservations.find((r) => r.id === reservationId);
-        conv.linkedBookingReference = res?.bookingReference || null;
-        conv.status = 'awaiting_manager';
+
+      if (isUuid(convIdentifier)) {
+        query = query.or(`id.eq.${convIdentifier},external_session_id.eq.${convIdentifier}`);
+      } else {
+        query = query.eq('external_session_id', convIdentifier);
       }
+
+      const { data, error } = await query.select('id').maybeSingle();
+      if (error) {
+        logSupabaseError('linkConversationToReservation', error);
+        return null;
+      }
+      return data?.id ? String(data.id) : null;
     }
+
+    const conv = this.conversations.find(
+      (c) => c.isDemo === isDemo && (c.id === convIdentifier || c.externalSessionId === convIdentifier)
+    );
+    if (conv) {
+      conv.linkedReservationId = reservationId;
+      const res = this.reservations.find((r) => r.id === reservationId);
+      conv.linkedBookingReference = res?.bookingReference || null;
+      conv.status = 'awaiting_manager';
+      return conv.id;
+    }
+    return null;
   }
 
   async upsertConversation(input: UpsertConversationInput): Promise<ConversationRecord> {
     const now = new Date().toISOString();
 
-    if (this.supabase) {
-      const { data: existing } = await this.supabase
+    if (this.supabaseConfiguredMode) {
+      const client = this.assertSupabaseReady();
+      const { data: existing, error: lookupErr } = await client
         .from('conversations')
         .select('*')
         .eq('external_session_id', input.externalSessionId)
         .maybeSingle();
 
-      let convId = existing ? String(existing.id) : crypto.randomUUID();
+      if (lookupErr) {
+        throw new Error(logSupabaseError('upsertConversation.lookup', lookupErr));
+      }
+
+      const convId = existing ? String(existing.id) : crypto.randomUUID();
+      const linkedReservationUuid = isUuid(input.linkedReservationId) ? input.linkedReservationId : null;
 
       if (!existing) {
         const customer =
@@ -1197,7 +1500,7 @@ class MemoryAndSupabaseStore {
                 isDemo: input.isDemo,
               })
             : null;
-        await this.supabase.from('conversations').insert({
+        const { error: insertErr } = await client.from('conversations').insert({
           id: convId,
           external_session_id: input.externalSessionId,
           customer_id: customer?.id || null,
@@ -1205,19 +1508,22 @@ class MemoryAndSupabaseStore {
           source: input.source,
           status: input.status || 'active',
           detected_intent: input.detectedIntent || 'general_inquiry',
-          linked_reservation_id: input.linkedReservationId || null,
+          linked_reservation_id: linkedReservationUuid,
           response_latency_ms: input.responseLatencyMs ?? null,
           needs_human_assistance: Boolean(input.needsHumanAssistance),
           last_message_at: now,
           is_demo: input.isDemo,
         });
+        if (insertErr) {
+          throw new Error(logSupabaseError('upsertConversation.insert', insertErr));
+        }
       } else {
-        await this.supabase
+        const { error: updateErr } = await client
           .from('conversations')
           .update({
             status: input.status || existing.status,
             detected_intent: input.detectedIntent || existing.detected_intent,
-            linked_reservation_id: input.linkedReservationId || existing.linked_reservation_id,
+            linked_reservation_id: linkedReservationUuid || existing.linked_reservation_id,
             response_latency_ms: input.responseLatencyMs ?? existing.response_latency_ms,
             needs_human_assistance:
               input.needsHumanAssistance !== undefined
@@ -1226,11 +1532,14 @@ class MemoryAndSupabaseStore {
             last_message_at: now,
           })
           .eq('id', convId);
+        if (updateErr) {
+          throw new Error(logSupabaseError('upsertConversation.update', updateErr));
+        }
       }
 
       if (input.messages && input.messages.length > 0) {
         for (const msg of input.messages) {
-          await this.supabase.from('conversation_messages').upsert(
+          const { error: msgErr } = await client.from('conversation_messages').upsert(
             {
               id: crypto.randomUUID(),
               conversation_id: convId,
@@ -1242,12 +1551,30 @@ class MemoryAndSupabaseStore {
             },
             { onConflict: 'external_message_id', ignoreDuplicates: true }
           );
+          if (msgErr) {
+            throw new Error(logSupabaseError('upsertConversation.messages', msgErr));
+          }
         }
       }
 
       const list = await this.listConversations(input.isDemo);
       const found = list.find((c) => c.id === convId);
-      if (found) return found;
+      if (!found) {
+        throw new Error('Conversation persisted in Supabase but could not be reloaded.');
+      }
+
+      if (found.needsHumanAssistance) {
+        await this.createNotification({
+          type: 'human_assistance_requested',
+          title: `Human Assistance Requested · ${found.customerIdentifier}`,
+          message: 'An AI conversation was flagged for direct manager follow-up.',
+          reservationId: found.linkedReservationId,
+          conversationId: found.id,
+          isDemo: found.isDemo,
+        });
+      }
+
+      return found;
     }
 
     let conv = this.conversations.find((c) => c.externalSessionId === input.externalSessionId);
@@ -1323,15 +1650,21 @@ class MemoryAndSupabaseStore {
     isDemo: boolean,
     patch: { status?: ConversationStatus; needsHumanAssistance?: boolean; actor: string }
   ): Promise<ConversationRecord | null> {
-    if (this.supabase) {
-      const { data: existing } = await this.supabase
+    if (this.supabaseConfiguredMode) {
+      const client = this.assertSupabaseReady();
+      if (!isUuid(id)) return null;
+      const { data: existing, error: fetchErr } = await client
         .from('conversations')
         .select('*')
         .eq('id', id)
         .eq('is_demo', isDemo)
         .maybeSingle();
+      if (fetchErr) {
+        throw new Error(logSupabaseError('updateConversationStatus.fetch', fetchErr));
+      }
       if (!existing) return null;
-      await this.supabase
+
+      const { error: updateErr } = await client
         .from('conversations')
         .update({
           status: patch.status ?? existing.status,
@@ -1341,13 +1674,16 @@ class MemoryAndSupabaseStore {
               : existing.needs_human_assistance,
         })
         .eq('id', id);
+      if (updateErr) {
+        throw new Error(logSupabaseError('updateConversationStatus.update', updateErr));
+      }
 
       if (patch.needsHumanAssistance) {
         await this.createNotification({
           type: 'human_assistance_requested',
           title: `Marked for Human Assistance`,
           message: `${existing.customer_identifier} requires personal manager follow-up.`,
-          reservationId: existing.linked_reservation_id,
+          reservationId: existing.linked_reservation_id ? String(existing.linked_reservation_id) : null,
           conversationId: id,
           isDemo,
         });
@@ -1391,8 +1727,10 @@ class MemoryAndSupabaseStore {
     notes: string,
     dietary?: string
   ): Promise<CustomerRecord | null> {
-    if (this.supabase) {
-      const { data } = await this.supabase
+    if (this.supabaseConfiguredMode) {
+      const client = this.assertSupabaseReady();
+      if (!isUuid(id)) return null;
+      const { data, error } = await client
         .from('customers')
         .update({
           internal_notes: notes.trim(),
@@ -1402,6 +1740,9 @@ class MemoryAndSupabaseStore {
         .eq('is_demo', isDemo)
         .select('*')
         .maybeSingle();
+      if (error) {
+        throw new Error(logSupabaseError('updateCustomerNotes', error));
+      }
       return data ? this.mapSupabaseCustomer(data) : null;
     }
 
@@ -1421,19 +1762,23 @@ class MemoryAndSupabaseStore {
     conversationId?: string | null;
     isDemo: boolean;
   }): Promise<NotificationRecord> {
+    const safeReservationId = isUuid(input.reservationId) ? input.reservationId : null;
+    const safeConversationId = isUuid(input.conversationId) ? input.conversationId : null;
+
     const rec: NotificationRecord = {
       id: crypto.randomUUID(),
       type: input.type,
       title: input.title,
       message: input.message,
       isRead: false,
-      reservationId: input.reservationId ?? null,
-      conversationId: input.conversationId ?? null,
+      reservationId: safeReservationId,
+      conversationId: safeConversationId,
       isDemo: input.isDemo,
       createdAt: new Date().toISOString(),
     };
-    if (this.supabase) {
-      await this.supabase.from('notifications').insert({
+    if (this.supabaseConfiguredMode) {
+      const client = this.assertSupabaseReady();
+      const { error } = await client.from('notifications').insert({
         id: rec.id,
         type: rec.type,
         title: rec.title,
@@ -1443,6 +1788,9 @@ class MemoryAndSupabaseStore {
         conversation_id: rec.conversationId,
         is_demo: rec.isDemo,
       });
+      if (error) {
+        logSupabaseError('createNotification', error);
+      }
     } else {
       this.notifications.unshift(rec);
     }
@@ -1450,10 +1798,14 @@ class MemoryAndSupabaseStore {
   }
 
   async markNotificationsRead(isDemo: boolean, id?: string): Promise<void> {
-    if (this.supabase) {
-      let query = this.supabase.from('notifications').update({ is_read: true }).eq('is_demo', isDemo);
+    if (this.supabaseConfiguredMode) {
+      const client = this.assertSupabaseReady();
+      let query = client.from('notifications').update({ is_read: true }).eq('is_demo', isDemo);
       if (id) query = query.eq('id', id);
-      await query;
+      const { error } = await query;
+      if (error) {
+        throw new Error(logSupabaseError('markNotificationsRead', error));
+      }
       return;
     }
     for (const n of this.notifications) {
@@ -1481,8 +1833,9 @@ class MemoryAndSupabaseStore {
       isDemo: input.isDemo,
       createdAt: new Date().toISOString(),
     };
-    if (this.supabase) {
-      await this.supabase.from('activity_logs').insert({
+    if (this.supabaseConfiguredMode) {
+      const client = this.assertSupabaseReady();
+      const { error } = await client.from('activity_logs').insert({
         id: rec.id,
         entity_type: rec.entityType,
         entity_id: rec.entityId,
@@ -1491,6 +1844,9 @@ class MemoryAndSupabaseStore {
         details: rec.details,
         is_demo: rec.isDemo,
       });
+      if (error) {
+        logSupabaseError('recordActivity', error);
+      }
     } else {
       this.activityLogs.unshift(rec);
       if (this.activityLogs.length > 200) this.activityLogs.length = 200;
@@ -1500,36 +1856,36 @@ class MemoryAndSupabaseStore {
   async recordIntegrationEvent(
     input: IntegrationEventInput
   ): Promise<{ event: IntegrationEventRecord; duplicate: boolean }> {
-    if (input.externalEventId) {
-      if (this.supabase) {
-        const { data: existing } = await this.supabase
-          .from('integration_events')
-          .select('*')
-          .eq('external_event_id', input.externalEventId)
-          .maybeSingle();
-        if (existing) {
-          return {
-            duplicate: true,
-            event: {
-              id: String(existing.id),
-              externalEventId: String(existing.external_event_id),
-              eventType: String(existing.event_type),
-              source: String(existing.source),
-              status: existing.status as IntegrationEventRecord['status'],
-              httpStatus: existing.http_status ? Number(existing.http_status) : null,
-              summary: String(existing.summary),
-              errorMessage: existing.error_message ? String(existing.error_message) : null,
-              isDemo: Boolean(existing.is_demo),
-              createdAt: String(existing.created_at),
-            },
-          };
-        }
-      } else {
-        const existing = this.integrationEvents.find(
-          (e) => e.externalEventId === input.externalEventId
-        );
-        if (existing) return { duplicate: true, event: existing };
+    if (input.externalEventId && this.supabaseConfiguredMode && this.supabase) {
+      const { data: existing, error: lookupErr } = await this.supabase
+        .from('integration_events')
+        .select('*')
+        .eq('external_event_id', input.externalEventId)
+        .maybeSingle();
+      if (lookupErr) {
+        logSupabaseError('recordIntegrationEvent.lookup', lookupErr);
+      } else if (existing) {
+        return {
+          duplicate: true,
+          event: {
+            id: String(existing.id),
+            externalEventId: String(existing.external_event_id),
+            eventType: String(existing.event_type),
+            source: String(existing.source),
+            status: existing.status as IntegrationEventRecord['status'],
+            httpStatus: existing.http_status ? Number(existing.http_status) : null,
+            summary: String(existing.summary),
+            errorMessage: existing.error_message ? String(existing.error_message) : null,
+            isDemo: Boolean(existing.is_demo),
+            createdAt: String(existing.created_at),
+          },
+        };
       }
+    } else if (input.externalEventId && !this.supabaseConfiguredMode) {
+      const existing = this.integrationEvents.find(
+        (e) => e.externalEventId === input.externalEventId
+      );
+      if (existing) return { duplicate: true, event: existing };
     }
 
     const rec: IntegrationEventRecord = {
@@ -1545,24 +1901,32 @@ class MemoryAndSupabaseStore {
       createdAt: new Date().toISOString(),
     };
 
-    if (this.supabase) {
-      await this.supabase.from('integration_events').insert({
-        id: rec.id,
-        external_event_id: rec.externalEventId,
-        event_type: rec.eventType,
-        source: rec.source,
-        status: rec.status,
-        http_status: rec.httpStatus,
-        summary: rec.summary,
-        error_message: rec.errorMessage,
-        is_demo: rec.isDemo,
-      });
+    if (this.supabaseConfiguredMode) {
+      if (this.supabase && !this.supabaseInitError) {
+        const { error } = await this.supabase.from('integration_events').insert({
+          id: rec.id,
+          external_event_id: rec.externalEventId,
+          event_type: rec.eventType,
+          source: rec.source,
+          status: rec.status,
+          http_status: rec.httpStatus,
+          summary: rec.summary,
+          error_message: rec.errorMessage,
+          is_demo: rec.isDemo,
+        });
+        if (error) {
+          logSupabaseError('recordIntegrationEvent.insert', error);
+          this.pushFallbackDiagnosticEvent(rec);
+        }
+      } else {
+        this.pushFallbackDiagnosticEvent(rec);
+      }
     } else {
       this.integrationEvents.unshift(rec);
       if (this.integrationEvents.length > 150) this.integrationEvents.length = 150;
     }
 
-    if (rec.status === 'failed') {
+    if (rec.status === 'failed' && (!this.supabaseConfiguredMode || (this.supabase && !this.supabaseInitError))) {
       await this.createNotification({
         type: 'automation_integration_error',
         title: `Integration Error · ${rec.eventType}`,
@@ -1575,12 +1939,16 @@ class MemoryAndSupabaseStore {
   }
 
   async listReservations(isDemo: boolean): Promise<ReservationRecord[]> {
-    if (this.supabase) {
-      const { data } = await this.supabase
+    if (this.supabaseConfiguredMode) {
+      const client = this.assertSupabaseReady();
+      const { data, error } = await client
         .from('reservations')
         .select('*')
         .eq('is_demo', isDemo)
         .order('created_at', { ascending: false });
+      if (error) {
+        throw new Error(logSupabaseError('listReservations', error));
+      }
       return (data || []).map((r) => this.mapSupabaseReservation(r));
     }
     return this.reservations
@@ -1589,12 +1957,16 @@ class MemoryAndSupabaseStore {
   }
 
   async listCustomers(isDemo: boolean): Promise<CustomerRecord[]> {
-    if (this.supabase) {
-      const { data } = await this.supabase
+    if (this.supabaseConfiguredMode) {
+      const client = this.assertSupabaseReady();
+      const { data, error } = await client
         .from('customers')
         .select('*')
         .eq('is_demo', isDemo)
         .order('updated_at', { ascending: false });
+      if (error) {
+        throw new Error(logSupabaseError('listCustomers', error));
+      }
       return (data || []).map((c) => this.mapSupabaseCustomer(c));
     }
     return this.customers
@@ -1602,16 +1974,24 @@ class MemoryAndSupabaseStore {
       .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
   }
 
-  async listConversations(isDemo: boolean): Promise<ConversationRecord[]> {
-    if (this.supabase) {
-      const { data: convs } = await this.supabase
+  async listConversations(
+    isDemo: boolean,
+    preloadedReservations?: ReservationRecord[],
+    preloadedCustomers?: CustomerRecord[]
+  ): Promise<ConversationRecord[]> {
+    if (this.supabaseConfiguredMode) {
+      const client = this.assertSupabaseReady();
+      const { data: convs, error } = await client
         .from('conversations')
         .select('*, conversation_messages(*)')
         .eq('is_demo', isDemo)
         .order('last_message_at', { ascending: false });
+      if (error) {
+        throw new Error(logSupabaseError('listConversations', error));
+      }
 
-      const reservations = await this.listReservations(isDemo);
-      const customers = await this.listCustomers(isDemo);
+      const reservations = preloadedReservations ?? (await this.listReservations(isDemo));
+      const customers = preloadedCustomers ?? (await this.listCustomers(isDemo));
 
       return (convs || []).map((cv: Record<string, unknown>) => {
         const linkedRes = cv.linked_reservation_id
@@ -1673,13 +2053,17 @@ class MemoryAndSupabaseStore {
   }
 
   async listNotifications(isDemo: boolean): Promise<NotificationRecord[]> {
-    if (this.supabase) {
-      const { data } = await this.supabase
+    if (this.supabaseConfiguredMode) {
+      const client = this.assertSupabaseReady();
+      const { data, error } = await client
         .from('notifications')
         .select('*')
         .eq('is_demo', isDemo)
         .order('created_at', { ascending: false })
         .limit(100);
+      if (error) {
+        throw new Error(logSupabaseError('listNotifications', error));
+      }
       return (data || []).map((n: Record<string, unknown>) => ({
         id: String(n.id),
         type: n.type as NotificationType,
@@ -1698,13 +2082,17 @@ class MemoryAndSupabaseStore {
   }
 
   async listActivityLogs(isDemo: boolean): Promise<ActivityLogRecord[]> {
-    if (this.supabase) {
-      const { data } = await this.supabase
+    if (this.supabaseConfiguredMode) {
+      const client = this.assertSupabaseReady();
+      const { data, error } = await client
         .from('activity_logs')
         .select('*')
         .eq('is_demo', isDemo)
         .order('created_at', { ascending: false })
         .limit(100);
+      if (error) {
+        throw new Error(logSupabaseError('listActivityLogs', error));
+      }
       return (data || []).map((a: Record<string, unknown>) => ({
         id: String(a.id),
         entityType: a.entity_type as ActivityLogRecord['entityType'],
@@ -1722,14 +2110,18 @@ class MemoryAndSupabaseStore {
   }
 
   async listIntegrationEvents(isDemo: boolean): Promise<IntegrationEventRecord[]> {
-    if (this.supabase) {
-      const { data } = await this.supabase
+    if (this.supabaseConfiguredMode) {
+      const client = this.assertSupabaseReady();
+      const { data, error } = await client
         .from('integration_events')
         .select('*')
         .eq('is_demo', isDemo)
         .order('created_at', { ascending: false })
         .limit(50);
-      return (data || []).map((e: Record<string, unknown>) => ({
+      if (error) {
+        throw new Error(logSupabaseError('listIntegrationEvents', error));
+      }
+      const dbEvents = (data || []).map((e: Record<string, unknown>) => ({
         id: String(e.id),
         externalEventId: e.external_event_id ? String(e.external_event_id) : null,
         eventType: String(e.event_type),
@@ -1741,6 +2133,8 @@ class MemoryAndSupabaseStore {
         isDemo: Boolean(e.is_demo),
         createdAt: String(e.created_at),
       }));
+      const volatile = this.diagnosticEventsFallback.filter((e) => e.isDemo === isDemo);
+      return [...volatile, ...dbEvents].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
     }
     return this.integrationEvents
       .filter((e) => e.isDemo === isDemo)
@@ -1749,6 +2143,111 @@ class MemoryAndSupabaseStore {
 
   async getWorkspaceSnapshot(isDemo: boolean): Promise<WorkspaceSnapshot> {
     const { dateStr, timeStr } = getKarachiDateAndTime();
+
+    if (this.supabaseConfiguredMode) {
+      let persistenceError: string | null = null;
+      const errors: string[] = [];
+
+      if (this.supabaseInitError || !this.supabase) {
+        persistenceError =
+          this.supabaseInitError || 'Supabase client could not be initialized.';
+        this.lastVerifiedDbState = 'error';
+        this.lastDbError = persistenceError;
+
+        const integrationEvents = this.diagnosticEventsFallback.filter((e) => e.isDemo === isDemo);
+        const integrationStatus = await this.getIntegrationStatus(isDemo, {
+          skipProbe: true,
+          preloadedEvents: integrationEvents,
+        });
+
+        return {
+          workspace: isDemo ? 'demo' : 'production',
+          storageMode: this.getStorageMode(),
+          persistenceError,
+          karachiToday: dateStr,
+          karachiNowTime: timeStr,
+          reservations: [],
+          customers: [],
+          conversations: [],
+          notifications: [],
+          activityLogs: [],
+          settings: createDefaultSettings(),
+          integrationEvents,
+          integrationStatus,
+        };
+      }
+
+      const [resResult, custResult, notifResult, actResult, setResult, evResult] =
+        await Promise.allSettled([
+          this.listReservations(isDemo),
+          this.listCustomers(isDemo),
+          this.listNotifications(isDemo),
+          this.listActivityLogs(isDemo),
+          this.getSettings(),
+          this.listIntegrationEvents(isDemo),
+        ]);
+
+      const extractError = (r: PromiseSettledResult<unknown>): string | null =>
+        r.status === 'rejected'
+          ? r.reason instanceof Error
+            ? r.reason.message
+            : String(r.reason)
+          : null;
+
+      for (const r of [resResult, custResult, notifResult, actResult, setResult, evResult]) {
+        const errMsg = extractError(r);
+        if (errMsg) errors.push(errMsg);
+      }
+
+      const reservations = resResult.status === 'fulfilled' ? resResult.value : [];
+      const customers = custResult.status === 'fulfilled' ? custResult.value : [];
+      const notifications = notifResult.status === 'fulfilled' ? notifResult.value : [];
+      const activityLogs = actResult.status === 'fulfilled' ? actResult.value : [];
+      const settings =
+        setResult.status === 'fulfilled' ? setResult.value : createDefaultSettings();
+      const integrationEvents =
+        evResult.status === 'fulfilled'
+          ? evResult.value
+          : this.diagnosticEventsFallback.filter((e) => e.isDemo === isDemo);
+
+      let conversations: ConversationRecord[] = [];
+      try {
+        conversations = await this.listConversations(isDemo, reservations, customers);
+      } catch (err) {
+        errors.push(err instanceof Error ? err.message : String(err));
+      }
+
+      if (errors.length > 0) {
+        persistenceError = errors[0];
+        this.lastVerifiedDbState = 'error';
+        this.lastDbError = persistenceError;
+      } else {
+        this.lastVerifiedDbState = 'connected';
+        this.lastDbError = null;
+      }
+
+      const integrationStatus = await this.getIntegrationStatus(isDemo, {
+        skipProbe: true,
+        preloadedEvents: integrationEvents,
+      });
+
+      return {
+        workspace: isDemo ? 'demo' : 'production',
+        storageMode: this.getStorageMode(),
+        persistenceError,
+        karachiToday: dateStr,
+        karachiNowTime: timeStr,
+        reservations,
+        customers,
+        conversations,
+        notifications,
+        activityLogs,
+        settings,
+        integrationEvents,
+        integrationStatus,
+      };
+    }
+
     const [
       reservations,
       customers,
@@ -1772,6 +2271,7 @@ class MemoryAndSupabaseStore {
     return {
       workspace: isDemo ? 'demo' : 'production',
       storageMode: this.getStorageMode(),
+      persistenceError: null,
       karachiToday: dateStr,
       karachiNowTime: timeStr,
       reservations,

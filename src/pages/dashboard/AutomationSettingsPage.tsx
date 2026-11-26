@@ -79,14 +79,29 @@ export function AutomationSettingsPage() {
             </div>
 
             <div className="divide-y divide-[#172332]/8 text-xs">
-              <div className="p-4 sm:px-5 flex items-center justify-between gap-4">
-                <div>
-                  <p className="font-semibold text-[#172332]">Persistence Engine</p>
-                  <p className="text-[#4F5D6A]">
-                    Active mode: <span className="font-mono">{status.storageMode}</span> (Supabase service-role stays strictly server-side)
-                  </p>
+              <div className="p-4 sm:px-5 space-y-2.5">
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    <p className="font-semibold text-[#172332]">Persistence Engine</p>
+                    <p className="text-[#4F5D6A]">
+                      Active mode: <span className="font-mono">{status.storageMode}</span> (Supabase service-role stays strictly server-side)
+                    </p>
+                  </div>
+                  <ConnectionStateBadge state={status.databaseState} />
                 </div>
-                <ConnectionStateBadge state={status.databaseState} />
+                {(status.databaseError || snapshot.persistenceError || status.databaseState === 'error') && (
+                  <div
+                    role="alert"
+                    className="rounded-lg border border-[#DC2626]/30 bg-[#FEE2E2]/70 px-3.5 py-2.5 text-[11px] text-[#991B1B]"
+                  >
+                    <p className="font-semibold">Database Diagnostic</p>
+                    <p className="mt-0.5 font-mono break-words">
+                      {status.databaseError ||
+                        snapshot.persistenceError ||
+                        'Supabase query failed. Click Test Server Connections or check Vercel Runtime Logs for [Supabase:*] details.'}
+                    </p>
+                  </div>
+                )}
               </div>
 
               <div className="p-4 sm:px-5 flex items-center justify-between gap-4">

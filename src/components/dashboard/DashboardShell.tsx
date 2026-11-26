@@ -414,7 +414,36 @@ export function DashboardShell({
                 </button>
               </div>
             ) : (
-              children
+              <>
+                {snapshot &&
+                  (snapshot.persistenceError ||
+                    snapshot.integrationStatus?.databaseState === 'error') && (
+                    <div
+                      role="alert"
+                      className="mb-5 rounded-xl border border-[#DC2626]/35 bg-[#FEE2E2] px-4 py-3 text-xs text-[#991B1B] flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                    >
+                      <div className="space-y-0.5 min-w-0">
+                        <p className="font-semibold">
+                          Supabase Persistence Error ({snapshot.storageMode})
+                        </p>
+                        <p className="font-mono text-[11px] break-words">
+                          {snapshot.persistenceError ||
+                            snapshot.integrationStatus.databaseError ||
+                            'Database verification failed; synthetic demo fallback is disabled.'}
+                        </p>
+                      </div>
+                      {pathname !== '/staff-demo/settings' && (
+                        <Link
+                          to="/staff-demo/settings"
+                          className="shrink-0 rounded-lg bg-[#991B1B] text-white px-3 py-1.5 text-[11px] font-medium whitespace-nowrap"
+                        >
+                          Open Diagnostics
+                        </Link>
+                      )}
+                    </div>
+                  )}
+                {children}
+              </>
             )}
           </div>
         </main>

@@ -330,30 +330,38 @@ export function registerManagementApiRoutes(app: Express) {
   });
 
   app.get('/api/integrations/n8n/availability', async (req, res) => {
-    const settings = await repository.getSettings();
-    const requestedDate = typeof req.query.date === 'string' ? req.query.date.trim() : '';
-    const requestedDateClosed =
-      Boolean(requestedDate) && settings.closureDates.includes(requestedDate);
+    try {
+      const settings = await repository.getSettings();
+      const requestedDate = typeof req.query.date === 'string' ? req.query.date.trim() : '';
+      const requestedDateClosed =
+        Boolean(requestedDate) && settings.closureDates.includes(requestedDate);
 
-    res.json({
-      ok: true,
-      timezone: 'Asia/Karachi',
-      advisoryOnly: true,
-      requireManagerApproval: settings.requireManagerApproval,
-      hoursConfigured: settings.hoursConfigured,
-      openingTime: settings.openingTime,
-      closingTime: settings.closingTime,
-      operatingDays: settings.operatingDays,
-      timeSlots: settings.timeSlots,
-      reservationDurationMinutes: settings.reservationDurationMinutes,
-      capacityConfigured: settings.capacityConfigured,
-      capacityIsSample: settings.capacityIsSample,
-      rooftopCapacity: settings.capacityConfigured ? settings.rooftopCapacity : null,
-      indoorCapacity: settings.capacityConfigured ? settings.indoorCapacity : null,
-      maxGuestCount: settings.maxGuestCount,
-      closureDates: settings.closureDates,
-      ...(requestedDate ? { requestedDate, requestedDateClosed } : {}),
-    });
+      res.json({
+        ok: true,
+        timezone: 'Asia/Karachi',
+        advisoryOnly: true,
+        requireManagerApproval: settings.requireManagerApproval,
+        hoursConfigured: settings.hoursConfigured,
+        openingTime: settings.openingTime,
+        closingTime: settings.closingTime,
+        operatingDays: settings.operatingDays,
+        timeSlots: settings.timeSlots,
+        reservationDurationMinutes: settings.reservationDurationMinutes,
+        capacityConfigured: settings.capacityConfigured,
+        capacityIsSample: settings.capacityIsSample,
+        rooftopCapacity: settings.capacityConfigured ? settings.rooftopCapacity : null,
+        indoorCapacity: settings.capacityConfigured ? settings.indoorCapacity : null,
+        maxGuestCount: settings.maxGuestCount,
+        closureDates: settings.closureDates,
+        ...(requestedDate ? { requestedDate, requestedDateClosed } : {}),
+      });
+    } catch (err) {
+      res.status(500).json({
+        ok: false,
+        error: 'persistence_error',
+        message: err instanceof Error ? err.message : 'Could not load availability settings.',
+      });
+    }
   });
 
   app.post('/api/integrations/n8n/reservations', requireN8nAuth, async (req, res) => {
@@ -567,42 +575,50 @@ export function registerManagementApiRoutes(app: Express) {
       }
 
       const started = Date.now();
-      const sim = await runExplicitSimulatedDemoReply(sessionId, message);
-      const latency = Math.max(240, Date.now() - started + 280);
+      try {
+        const sim = await runExplicitSimulatedDemoReply(sessionId, message);
+        const latency = Math.max(240, Date.now() - started + 280);
 
-      await repository.upsertConversation({
-        externalSessionId: sessionId,
-        customerIdentifier: `Web AI Demo (${sessionId.slice(-6)})`,
-        customerName: 'Web AI Demo Visitor',
-        source: 'web_ai_demo',
-        status: sim.bookingReference ? 'awaiting_manager' : 'active',
-        detectedIntent: 'simulated_demo_inquiry',
-        responseLatencyMs: latency,
-        isDemo: true,
-        messages: [
-          {
-            externalMessageId: `sim-u-${crypto.randomUUID()}`,
-            sender: 'customer',
-            content: message,
-          },
-          {
-            externalMessageId: `sim-a-${crypto.randomUUID()}`,
-            sender: 'assistant',
-            content: sim.reply,
-            latencyMs: latency,
-          },
-        ],
-      });
+        await repository.upsertConversation({
+          externalSessionId: sessionId,
+          customerIdentifier: `Web AI Demo (${sessionId.slice(-6)})`,
+          customerName: 'Web AI Demo Visitor',
+          source: 'web_ai_demo',
+          status: sim.bookingReference ? 'awaiting_manager' : 'active',
+          detectedIntent: 'simulated_demo_inquiry',
+          responseLatencyMs: latency,
+          isDemo: true,
+          messages: [
+            {
+              externalMessageId: `sim-u-${crypto.randomUUID()}`,
+              sender: 'customer',
+              content: message,
+            },
+            {
+              externalMessageId: `sim-a-${crypto.randomUUID()}`,
+              sender: 'assistant',
+              content: sim.reply,
+              latencyMs: latency,
+            },
+          ],
+        });
 
-      res.json({
-        ok: true,
-        mode: 'simulated_demo',
-        simulated: true,
-        sessionId,
-        reply: sim.reply,
-        bookingReference: sim.bookingReference || null,
-        latencyMs: latency,
-      });
+        res.json({
+          ok: true,
+          mode: 'simulated_demo',
+          simulated: true,
+          sessionId,
+          reply: sim.reply,
+          bookingReference: sim.bookingReference || null,
+          latencyMs: latency,
+        });
+      } catch (err) {
+        res.status(500).json({
+          ok: false,
+          error: 'persistence_error',
+          message: err instanceof Error ? err.message : 'Database error storing simulated chat.',
+        });
+      }
       return;
     }
 
@@ -774,153 +790,217 @@ export function registerManagementApiRoutes(app: Express) {
       }
     }
 
-    const updated = await repository.updateReservation(String(req.params.id), true, {
-      customerName: typeof body.customerName === 'string' ? body.customerName : undefined,
-      customerPhone: typeof body.customerPhone === 'string' ? body.customerPhone : undefined,
-      customerEmail: typeof body.customerEmail === 'string' ? body.customerEmail : undefined,
-      guestCity: typeof body.guestCity === 'string' ? body.guestCity : undefined,
-      reservationDate:
-        typeof body.reservationDate === 'string' && isValidDateStr(body.reservationDate)
-          ? body.reservationDate
-          : undefined,
-      reservationTime:
-        typeof body.reservationTime === 'string' ? body.reservationTime : undefined,
-      guestCount: body.guestCount !== undefined ? Number(body.guestCount) : undefined,
-      seatingPreference: body.seatingPreference as ManagementSeating | undefined,
-      specialOccasion:
-        typeof body.specialOccasion === 'string' ? body.specialOccasion : undefined,
-      specialRequests:
-        typeof body.specialRequests === 'string' ? body.specialRequests : undefined,
-      dietaryRequirements:
-        typeof body.dietaryRequirements === 'string' ? body.dietaryRequirements : undefined,
-      status: body.status as ReservationStatus | undefined,
-      managerNotes: typeof body.managerNotes === 'string' ? body.managerNotes : undefined,
-      actionNote: typeof body.actionNote === 'string' ? body.actionNote : undefined,
-      actor: 'Demo Manager',
-    });
+    try {
+      const updated = await repository.updateReservation(String(req.params.id), true, {
+        customerName: typeof body.customerName === 'string' ? body.customerName : undefined,
+        customerPhone: typeof body.customerPhone === 'string' ? body.customerPhone : undefined,
+        customerEmail: typeof body.customerEmail === 'string' ? body.customerEmail : undefined,
+        guestCity: typeof body.guestCity === 'string' ? body.guestCity : undefined,
+        reservationDate:
+          typeof body.reservationDate === 'string' && isValidDateStr(body.reservationDate)
+            ? body.reservationDate
+            : undefined,
+        reservationTime:
+          typeof body.reservationTime === 'string' ? body.reservationTime : undefined,
+        guestCount: body.guestCount !== undefined ? Number(body.guestCount) : undefined,
+        seatingPreference: body.seatingPreference as ManagementSeating | undefined,
+        specialOccasion:
+          typeof body.specialOccasion === 'string' ? body.specialOccasion : undefined,
+        specialRequests:
+          typeof body.specialRequests === 'string' ? body.specialRequests : undefined,
+        dietaryRequirements:
+          typeof body.dietaryRequirements === 'string' ? body.dietaryRequirements : undefined,
+        status: body.status as ReservationStatus | undefined,
+        managerNotes: typeof body.managerNotes === 'string' ? body.managerNotes : undefined,
+        actionNote: typeof body.actionNote === 'string' ? body.actionNote : undefined,
+        actor: 'Demo Manager',
+      });
 
-    if (!updated) {
-      res.status(404).json({ ok: false, message: 'Reservation not found in demo workspace.' });
-      return;
+      if (!updated) {
+        res.status(404).json({ ok: false, message: 'Reservation not found in demo workspace.' });
+        return;
+      }
+      res.json({ ok: true, reservation: updated });
+    } catch (err) {
+      res.status(500).json({
+        ok: false,
+        error: 'persistence_error',
+        message: err instanceof Error ? err.message : 'Could not update reservation.',
+      });
     }
-    res.json({ ok: true, reservation: updated });
   });
 
   app.post('/api/demo/reservations/:id/retry-notification', async (req, res) => {
-    const updated = await repository.retryOutboundNotification(String(req.params.id), true);
-    if (!updated) {
-      res.status(404).json({ ok: false, message: 'Reservation not found.' });
-      return;
+    try {
+      const updated = await repository.retryOutboundNotification(String(req.params.id), true);
+      if (!updated) {
+        res.status(404).json({ ok: false, message: 'Reservation not found.' });
+        return;
+      }
+      res.json({ ok: true, reservation: updated });
+    } catch (err) {
+      res.status(500).json({
+        ok: false,
+        error: 'persistence_error',
+        message: err instanceof Error ? err.message : 'Could not retry notification.',
+      });
     }
-    res.json({ ok: true, reservation: updated });
   });
 
   app.patch('/api/demo/conversations/:id', async (req, res) => {
     const body = (req.body || {}) as Record<string, unknown>;
-    const updated = await repository.updateConversationStatus(String(req.params.id), true, {
-      status: VALID_CONV_STATUSES.includes(String(body.status) as ConversationStatus)
-        ? (String(body.status) as ConversationStatus)
-        : undefined,
-      needsHumanAssistance:
-        typeof body.needsHumanAssistance === 'boolean' ? body.needsHumanAssistance : undefined,
-      actor: 'Demo Manager',
-    });
-    if (!updated) {
-      res.status(404).json({ ok: false, message: 'Conversation not found.' });
-      return;
+    try {
+      const updated = await repository.updateConversationStatus(String(req.params.id), true, {
+        status: VALID_CONV_STATUSES.includes(String(body.status) as ConversationStatus)
+          ? (String(body.status) as ConversationStatus)
+          : undefined,
+        needsHumanAssistance:
+          typeof body.needsHumanAssistance === 'boolean' ? body.needsHumanAssistance : undefined,
+        actor: 'Demo Manager',
+      });
+      if (!updated) {
+        res.status(404).json({ ok: false, message: 'Conversation not found.' });
+        return;
+      }
+      res.json({ ok: true, conversation: updated });
+    } catch (err) {
+      res.status(500).json({
+        ok: false,
+        error: 'persistence_error',
+        message: err instanceof Error ? err.message : 'Could not update conversation.',
+      });
     }
-    res.json({ ok: true, conversation: updated });
   });
 
   app.patch('/api/demo/customers/:id', async (req, res) => {
     const body = (req.body || {}) as Record<string, unknown>;
-    const updated = await repository.updateCustomerNotes(
-      String(req.params.id),
-      true,
-      String(body.internalNotes ?? '').slice(0, 600),
-      typeof body.dietaryRequirements === 'string'
-        ? body.dietaryRequirements.slice(0, 300)
-        : undefined
-    );
-    if (!updated) {
-      res.status(404).json({ ok: false, message: 'Customer not found.' });
-      return;
+    try {
+      const updated = await repository.updateCustomerNotes(
+        String(req.params.id),
+        true,
+        String(body.internalNotes ?? '').slice(0, 600),
+        typeof body.dietaryRequirements === 'string'
+          ? body.dietaryRequirements.slice(0, 300)
+          : undefined
+      );
+      if (!updated) {
+        res.status(404).json({ ok: false, message: 'Customer not found.' });
+        return;
+      }
+      res.json({ ok: true, customer: updated });
+    } catch (err) {
+      res.status(500).json({
+        ok: false,
+        error: 'persistence_error',
+        message: err instanceof Error ? err.message : 'Could not update customer.',
+      });
     }
-    res.json({ ok: true, customer: updated });
   });
 
   app.post('/api/demo/notifications/read', async (req, res) => {
     const body = (req.body || {}) as Record<string, unknown>;
     const id = typeof body.id === 'string' ? body.id : undefined;
-    await repository.markNotificationsRead(true, id);
-    res.json({ ok: true });
+    try {
+      await repository.markNotificationsRead(true, id);
+      res.json({ ok: true });
+    } catch (err) {
+      res.status(500).json({
+        ok: false,
+        error: 'persistence_error',
+        message: err instanceof Error ? err.message : 'Could not mark notifications read.',
+      });
+    }
   });
 
   app.put('/api/demo/settings', async (req, res) => {
     const body = (req.body || {}) as Record<string, unknown>;
-    const settings = await repository.updateSettings(
-      {
-        operatingDays: Array.isArray(body.operatingDays)
-          ? body.operatingDays.map(String)
-          : undefined,
-        openingTime:
-          body.openingTime === null || typeof body.openingTime === 'string'
-            ? body.openingTime
+    try {
+      const settings = await repository.updateSettings(
+        {
+          operatingDays: Array.isArray(body.operatingDays)
+            ? body.operatingDays.map(String)
             : undefined,
-        closingTime:
-          body.closingTime === null || typeof body.closingTime === 'string'
-            ? body.closingTime
+          openingTime:
+            body.openingTime === null || typeof body.openingTime === 'string'
+              ? body.openingTime
+              : undefined,
+          closingTime:
+            body.closingTime === null || typeof body.closingTime === 'string'
+              ? body.closingTime
+              : undefined,
+          hoursConfigured:
+            typeof body.hoursConfigured === 'boolean' ? body.hoursConfigured : undefined,
+          timeSlots: Array.isArray(body.timeSlots) ? body.timeSlots.map(String) : undefined,
+          reservationDurationMinutes:
+            typeof body.reservationDurationMinutes === 'number'
+              ? Math.min(360, Math.max(30, body.reservationDurationMinutes))
+              : undefined,
+          rooftopCapacity:
+            body.rooftopCapacity === null || typeof body.rooftopCapacity === 'number'
+              ? body.rooftopCapacity
+              : undefined,
+          indoorCapacity:
+            body.indoorCapacity === null || typeof body.indoorCapacity === 'number'
+              ? body.indoorCapacity
+              : undefined,
+          maxGuestCount:
+            body.maxGuestCount === null || typeof body.maxGuestCount === 'number'
+              ? body.maxGuestCount
+              : undefined,
+          capacityConfigured:
+            typeof body.capacityConfigured === 'boolean' ? body.capacityConfigured : undefined,
+          capacityIsSample:
+            typeof body.capacityIsSample === 'boolean' ? body.capacityIsSample : undefined,
+          closureDates: Array.isArray(body.closureDates)
+            ? body.closureDates.map(String).filter(isValidDateStr)
             : undefined,
-        hoursConfigured:
-          typeof body.hoursConfigured === 'boolean' ? body.hoursConfigured : undefined,
-        timeSlots: Array.isArray(body.timeSlots) ? body.timeSlots.map(String) : undefined,
-        reservationDurationMinutes:
-          typeof body.reservationDurationMinutes === 'number'
-            ? Math.min(360, Math.max(30, body.reservationDurationMinutes))
-            : undefined,
-        rooftopCapacity:
-          body.rooftopCapacity === null || typeof body.rooftopCapacity === 'number'
-            ? body.rooftopCapacity
-            : undefined,
-        indoorCapacity:
-          body.indoorCapacity === null || typeof body.indoorCapacity === 'number'
-            ? body.indoorCapacity
-            : undefined,
-        maxGuestCount:
-          body.maxGuestCount === null || typeof body.maxGuestCount === 'number'
-            ? body.maxGuestCount
-            : undefined,
-        capacityConfigured:
-          typeof body.capacityConfigured === 'boolean' ? body.capacityConfigured : undefined,
-        capacityIsSample:
-          typeof body.capacityIsSample === 'boolean' ? body.capacityIsSample : undefined,
-        closureDates: Array.isArray(body.closureDates)
-          ? body.closureDates.map(String).filter(isValidDateStr)
-          : undefined,
-        requireManagerApproval:
-          typeof body.requireManagerApproval === 'boolean'
-            ? body.requireManagerApproval
-            : undefined,
-        n8nOutboundEnabled:
-          typeof body.n8nOutboundEnabled === 'boolean' ? body.n8nOutboundEnabled : undefined,
-      },
-      true
-    );
-    res.json({ ok: true, settings });
+          requireManagerApproval:
+            typeof body.requireManagerApproval === 'boolean'
+              ? body.requireManagerApproval
+              : undefined,
+          n8nOutboundEnabled:
+            typeof body.n8nOutboundEnabled === 'boolean' ? body.n8nOutboundEnabled : undefined,
+        },
+        true
+      );
+      res.json({ ok: true, settings });
+    } catch (err) {
+      res.status(500).json({
+        ok: false,
+        error: 'persistence_error',
+        message: err instanceof Error ? err.message : 'Could not save settings.',
+      });
+    }
   });
 
   app.post('/api/demo/integrations/test', async (_req, res) => {
-    const status = await repository.testIntegrations(true);
-    res.json({ ok: true, integrationStatus: status });
+    try {
+      const status = await repository.testIntegrations(true);
+      res.json({ ok: true, integrationStatus: status });
+    } catch (err) {
+      res.status(500).json({
+        ok: false,
+        error: 'persistence_error',
+        message: err instanceof Error ? err.message : 'Integration test failed.',
+      });
+    }
   });
 
   app.post('/api/demo/reset', async (req, res) => {
     const body = (req.body || {}) as Record<string, unknown>;
     const reseed = body.reseed !== false;
     simulatedSessions.clear();
-    await repository.resetDemoWorkspace(reseed);
-    const snapshot = await repository.getWorkspaceSnapshot(true);
-    res.json({ ok: true, snapshot });
+    try {
+      await repository.resetDemoWorkspace(reseed);
+      const snapshot = await repository.getWorkspaceSnapshot(true);
+      res.json({ ok: true, snapshot });
+    } catch (err) {
+      res.status(500).json({
+        ok: false,
+        error: 'persistence_error',
+        message: err instanceof Error ? err.message : 'Could not reset demo workspace.',
+      });
+    }
   });
 
   // 5. PRODUCTION MANAGER AUTHENTICATED ENDPOINTS (/api/admin/*)
@@ -955,29 +1035,45 @@ export function registerManagementApiRoutes(app: Express) {
   });
 
   app.get('/api/admin/workspace', requireManagerAuth, async (_req, res) => {
-    const snapshot = await repository.getWorkspaceSnapshot(false);
-    res.json({ ok: true, snapshot });
+    try {
+      const snapshot = await repository.getWorkspaceSnapshot(false);
+      res.json({ ok: true, snapshot });
+    } catch (err) {
+      res.status(500).json({
+        ok: false,
+        error: 'persistence_error',
+        message: err instanceof Error ? err.message : 'Failed to load production workspace.',
+      });
+    }
   });
 
   app.patch('/api/admin/reservations/:id', requireManagerAuth, async (req, res) => {
     const body = (req.body || {}) as Record<string, unknown>;
-    const updated = await repository.updateReservation(String(req.params.id), false, {
-      status: VALID_STATUSES.includes(String(body.status) as ReservationStatus)
-        ? (String(body.status) as ReservationStatus)
-        : undefined,
-      managerNotes: typeof body.managerNotes === 'string' ? body.managerNotes : undefined,
-      reservationDate:
-        typeof body.reservationDate === 'string' && isValidDateStr(body.reservationDate)
-          ? body.reservationDate
+    try {
+      const updated = await repository.updateReservation(String(req.params.id), false, {
+        status: VALID_STATUSES.includes(String(body.status) as ReservationStatus)
+          ? (String(body.status) as ReservationStatus)
           : undefined,
-      reservationTime:
-        typeof body.reservationTime === 'string' ? body.reservationTime : undefined,
-      actor: 'Production Manager',
-    });
-    if (!updated) {
-      res.status(404).json({ ok: false, message: 'Production reservation not found.' });
-      return;
+        managerNotes: typeof body.managerNotes === 'string' ? body.managerNotes : undefined,
+        reservationDate:
+          typeof body.reservationDate === 'string' && isValidDateStr(body.reservationDate)
+            ? body.reservationDate
+            : undefined,
+        reservationTime:
+          typeof body.reservationTime === 'string' ? body.reservationTime : undefined,
+        actor: 'Production Manager',
+      });
+      if (!updated) {
+        res.status(404).json({ ok: false, message: 'Production reservation not found.' });
+        return;
+      }
+      res.json({ ok: true, reservation: updated });
+    } catch (err) {
+      res.status(500).json({
+        ok: false,
+        error: 'persistence_error',
+        message: err instanceof Error ? err.message : 'Could not update production reservation.',
+      });
     }
-    res.json({ ok: true, reservation: updated });
   });
 }
