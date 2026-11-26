@@ -170,6 +170,7 @@ function inspectSupabaseKeyRole(
 function redactSensitiveText(input: string): string {
   return input
     .replace(/Bearer\s+[A-Za-z0-9._-]+/gi, 'Bearer [REDACTED]')
+    .replace(/Basic\s+[A-Za-z0-9+/=]+/gi, 'Basic [REDACTED]')
     .replace(/eyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+/g, '[REDACTED_JWT]')
     .replace(/sb_(?:secret|publishable)_[A-Za-z0-9_-]+/g, '[REDACTED_KEY]')
     .replace(/https?:\/\/[^\s'"]+/gi, '[SUPABASE_HOST]')
@@ -265,6 +266,8 @@ function getEnvConfig() {
   const supabaseUrl = normalizeSupabaseUrl(process.env.SUPABASE_URL);
   const supabaseServiceKey = stripEnvValue(process.env.SUPABASE_SERVICE_ROLE_KEY);
   const n8nChatUrl = stripEnvValue(process.env.N8N_CHAT_WEBHOOK_URL);
+  const n8nChatUsername = stripEnvValue(process.env.N8N_CHAT_USERNAME);
+  const n8nChatPassword = stripEnvValue(process.env.N8N_CHAT_PASSWORD);
   const n8nStatusUrl = stripEnvValue(process.env.N8N_STATUS_WEBHOOK_URL);
   const n8nSecret = stripEnvValue(process.env.N8N_INTEGRATION_SECRET);
   const whatsappTestRaw = stripEnvValue(process.env.WHATSAPP_TEST_NUMBER).replace(/\D/g, '');
@@ -276,10 +279,35 @@ function getEnvConfig() {
     supabaseConfigured: Boolean(supabaseUrl && supabaseServiceKey),
     supabaseValidationError: validateSupabaseEnvConfig(supabaseUrl, supabaseServiceKey),
     n8nChatUrl,
+    n8nChatUsername,
+    n8nChatPassword,
     n8nStatusUrl,
     n8nSecret,
     whatsappTestDigits: whatsappTestRaw.length >= 7 ? whatsappTestRaw : '',
     whatsappCloudFlag,
+  };
+}
+
+export function getN8nChatProxyConfig() {
+  const env = getEnvConfig();
+  const basicAuthConfigured = Boolean(env.n8nChatUsername && env.n8nChatPassword);
+  const basicAuthIncomplete = Boolean(env.n8nChatUsername) !== Boolean(env.n8nChatPassword);
+  let authHeader: string | null = null;
+  if (basicAuthConfigured) {
+    const encoded = Buffer.from(
+      `${env.n8nChatUsername}:${env.n8nChatPassword}`,
+      'utf8'
+    ).toString('base64');
+    authHeader = `Basic ${encoded}`;
+  } else if (!basicAuthIncomplete && env.n8nSecret) {
+    authHeader = `Bearer ${env.n8nSecret}`;
+  }
+
+  return {
+    chatUrl: env.n8nChatUrl,
+    basicAuthConfigured,
+    basicAuthIncomplete,
+    authHeader,
   };
 }
 
@@ -821,40 +849,95 @@ class MemoryAndSupabaseStore {
     }
 
     if (env.n8nChatUrl) {
-      try {
-        const parsed = new URL(env.n8nChatUrl);
-        if (!['http:', 'https:'].includes(parsed.protocol)) {
-          throw new Error('Unsupported URL protocol');
-        }
-        const resp = await fetch(parsed.toString(), {
-          method: 'HEAD',
-          signal: AbortSignal.timeout(4000),
-        });
-        // n8n webhook URLs often respond 404/405 to HEAD while reachable; < 500 means endpoint responded
-        const reachable = resp.status < 500;
-        this.lastVerifiedN8nChatState = reachable ? 'connected' : 'error';
-        await this.recordIntegrationEvent({
-          eventType: 'health_check.n8n_chat',
-          source: 'dashboard',
-          status: reachable ? 'success' : 'failed',
-          httpStatus: resp.status,
-          summary: reachable
-            ? `n8n Chat webhook host responded (HTTP ${resp.status}).`
-            : `n8n Chat webhook returned server error (HTTP ${resp.status}).`,
-          errorMessage: reachable ? null : `HTTP ${resp.status}`,
-          isDemo: isDemoWorkspace,
-        });
-      } catch (err) {
+      const chatAuth = getN8nChatProxyConfig();
+      if (chatAuth.basicAuthIncomplete) {
         this.lastVerifiedN8nChatState = 'error';
+        console.error(
+          '[n8n:health_check] Incomplete Basic Auth credentials: both N8N_CHAT_USERNAME and N8N_CHAT_PASSWORD must be configured.'
+        );
         await this.recordIntegrationEvent({
           eventType: 'health_check.n8n_chat',
           source: 'dashboard',
           status: 'failed',
-          httpStatus: 502,
-          summary: 'Failed to reach configured N8N_CHAT_WEBHOOK_URL.',
-          errorMessage: err instanceof Error ? err.message : 'Connection failed',
+          httpStatus: 400,
+          summary: 'Incomplete n8n Chat Basic Auth credentials.',
+          errorMessage:
+            'Both N8N_CHAT_USERNAME and N8N_CHAT_PASSWORD must be configured on the server.',
           isDemo: isDemoWorkspace,
         });
+      } else {
+        try {
+          const parsed = new URL(env.n8nChatUrl);
+          if (!['http:', 'https:'].includes(parsed.protocol)) {
+            throw new Error('Unsupported URL protocol');
+          }
+          const headers: Record<string, string> = {};
+          if (chatAuth.authHeader) {
+            headers.Authorization = chatAuth.authHeader;
+          }
+          // Use GET with Basic Auth so n8n validates credentials without triggering AI sendMessage or creating reservations
+          const resp = await fetch(parsed.toString(), {
+            method: 'GET',
+            headers,
+            signal: AbortSignal.timeout(6000),
+          });
+
+          const authFailed = resp.status === 401 || resp.status === 403;
+          const notFound = resp.status === 404;
+          const serverError = resp.status >= 500;
+          const reachable = !authFailed && !notFound && !serverError;
+
+          this.lastVerifiedN8nChatState = reachable ? 'connected' : 'error';
+          let errMessage: string | null = null;
+          let summary = `n8n Chat Trigger verified (HTTP ${resp.status}).`;
+          if (authFailed) {
+            summary = `n8n Chat Trigger authentication failed (HTTP ${resp.status}).`;
+            errMessage =
+              'Authentication rejected. Verify N8N_CHAT_USERNAME and N8N_CHAT_PASSWORD.';
+            console.error(`[n8n:health_check] ${summary}`);
+          } else if (notFound) {
+            summary = 'n8n Chat webhook URL not found (HTTP 404).';
+            errMessage =
+              'Ensure N8N_CHAT_WEBHOOK_URL is correct and the n8n workflow is published/active.';
+            console.error(`[n8n:health_check] ${summary}`);
+          } else if (serverError) {
+            summary = `n8n Chat webhook returned server error (HTTP ${resp.status}).`;
+            errMessage = `HTTP ${resp.status}`;
+            console.error(`[n8n:health_check] ${summary}`);
+          }
+
+          await this.recordIntegrationEvent({
+            eventType: 'health_check.n8n_chat',
+            source: 'dashboard',
+            status: reachable ? 'success' : 'failed',
+            httpStatus: resp.status,
+            summary,
+            errorMessage: errMessage,
+            isDemo: isDemoWorkspace,
+          });
+        } catch (err) {
+          this.lastVerifiedN8nChatState = 'error';
+          const isTimeout =
+            err instanceof Error &&
+            (err.name === 'TimeoutError' || err.name === 'AbortError');
+          const safeMsg = isTimeout
+            ? 'Connection to n8n Chat Trigger timed out after 6s.'
+            : redactSensitiveText(
+                err instanceof Error ? err.message : 'Connection failed'
+              );
+          console.error(`[n8n:health_check] Failed reaching chat webhook: ${safeMsg}`);
+          await this.recordIntegrationEvent({
+            eventType: 'health_check.n8n_chat',
+            source: 'dashboard',
+            status: 'failed',
+            httpStatus: isTimeout ? 504 : 502,
+            summary: isTimeout
+              ? 'n8n Chat Trigger connection timed out.'
+              : 'Failed to reach configured N8N_CHAT_WEBHOOK_URL.',
+            errorMessage: safeMsg,
+            isDemo: isDemoWorkspace,
+          });
+        }
       }
     }
 
@@ -864,11 +947,17 @@ class MemoryAndSupabaseStore {
         if (!['http:', 'https:'].includes(parsed.protocol)) {
           throw new Error('Unsupported URL protocol');
         }
+        const headers: Record<string, string> = {};
+        if (env.n8nSecret) {
+          headers.Authorization = `Bearer ${env.n8nSecret}`;
+        }
         const resp = await fetch(parsed.toString(), {
           method: 'HEAD',
+          headers,
           signal: AbortSignal.timeout(4000),
         });
-        const reachable = resp.status < 500;
+        const reachable =
+          resp.status !== 401 && resp.status !== 403 && resp.status !== 404 && resp.status < 500;
         this.lastVerifiedN8nStatusState = reachable ? 'connected' : 'error';
         await this.recordIntegrationEvent({
           eventType: 'health_check.n8n_status',

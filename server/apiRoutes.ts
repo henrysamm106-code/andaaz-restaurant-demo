@@ -4,6 +4,7 @@ import {
   claimFirstRunManagerPasscode,
   getAdminAuthStatus,
   getKarachiDateAndTime,
+  getN8nChatProxyConfig,
   issueManagerBearerToken,
   repository,
   verifyManagerBearerToken,
@@ -267,6 +268,121 @@ async function runExplicitSimulatedDemoReply(
     reply: `[Simulated Demo] Thank you, ${state.name}. Your demonstration request (${created.reservation.bookingReference}) has been saved with Pending status and an in-app notification was sent to the Demo Manager Dashboard. Note: availability always requires manager confirmation.`,
     bookingReference: created.reservation.bookingReference,
   };
+}
+
+function extractTextFromN8nNode(node: unknown): {
+  reply: string | null;
+  bookingReference: string | null;
+} {
+  if (typeof node === 'string') {
+    const trimmed = node.trim();
+    return { reply: trimmed || null, bookingReference: null };
+  }
+  if (Array.isArray(node)) {
+    for (const item of node) {
+      const nested = extractTextFromN8nNode(item);
+      if (nested.reply) return nested;
+    }
+    return { reply: null, bookingReference: null };
+  }
+  if (node && typeof node === 'object') {
+    const obj = node as Record<string, unknown>;
+    const bookingRefRaw = obj.booking_reference ?? obj.bookingReference;
+    const bookingReference =
+      typeof bookingRefRaw === 'string' && bookingRefRaw.trim()
+        ? bookingRefRaw.trim()
+        : null;
+
+    for (const key of ['output', 'text', 'reply', 'message', 'response', 'answer', 'content']) {
+      const val = obj[key];
+      if (typeof val === 'string' && val.trim()) {
+        return { reply: val.trim(), bookingReference };
+      }
+    }
+
+    if (obj.json) {
+      const nested = extractTextFromN8nNode(obj.json);
+      if (nested.reply) {
+        return {
+          reply: nested.reply,
+          bookingReference: bookingReference || nested.bookingReference,
+        };
+      }
+    }
+    if (obj.data) {
+      const nested = extractTextFromN8nNode(obj.data);
+      if (nested.reply) {
+        return {
+          reply: nested.reply,
+          bookingReference: bookingReference || nested.bookingReference,
+        };
+      }
+    }
+    if (Array.isArray(obj.messages) && obj.messages.length > 0) {
+      const lastMsg = obj.messages[obj.messages.length - 1];
+      const nested = extractTextFromN8nNode(lastMsg);
+      if (nested.reply) {
+        return {
+          reply: nested.reply,
+          bookingReference: bookingReference || nested.bookingReference,
+        };
+      }
+    }
+    return { reply: null, bookingReference };
+  }
+  return { reply: null, bookingReference: null };
+}
+
+function extractN8nChatResponse(rawText: string): {
+  reply: string;
+  bookingReference: string | null;
+} {
+  const trimmed = rawText.trim();
+  if (!trimmed) {
+    return { reply: '', bookingReference: null };
+  }
+
+  try {
+    const parsed = JSON.parse(trimmed);
+    const extracted = extractTextFromN8nNode(parsed);
+    if (extracted.reply) {
+      return {
+        reply: extracted.reply,
+        bookingReference: extracted.bookingReference,
+      };
+    }
+  } catch {
+    // Check if n8n returned streaming NDJSON chunks (one JSON object per line)
+    const lines = trimmed
+      .split(/\r?\n/)
+      .map((l) => l.trim())
+      .filter(Boolean);
+    if (lines.length > 1 && lines.every((l) => l.startsWith('{'))) {
+      let combined = '';
+      let bookingReference: string | null = null;
+      for (const line of lines) {
+        try {
+          const item = JSON.parse(line) as Record<string, unknown>;
+          if (item.type === 'item' && typeof item.content === 'string') {
+            combined += item.content;
+          } else {
+            const nested = extractTextFromN8nNode(item);
+            if (nested.reply && item.type !== 'begin' && item.type !== 'end') {
+              combined += nested.reply;
+            }
+            if (nested.bookingReference) bookingReference = nested.bookingReference;
+          }
+        } catch {
+          // Ignore malformed chunk line
+        }
+      }
+      if (combined.trim()) {
+        return { reply: combined.trim(), bookingReference };
+      }
+    }
+  }
+
+  return { reply: trimmed, bookingReference: null };
 }
 
 export function registerManagementApiRoutes(app: Express) {
@@ -548,7 +664,6 @@ export function registerManagementApiRoutes(app: Express) {
     const body = (req.body || {}) as Record<string, unknown>;
     const sessionId = String(body.sessionId ?? '').trim().slice(0, 120);
     const message = String(body.message ?? '').trim();
-    const source = body.source === 'whatsapp_ai' ? 'whatsapp_ai' : 'web_ai_demo';
     const allowSimulated = Boolean(body.allowSimulated);
 
     if (!sessionId || !message || message.length > 1000) {
@@ -560,10 +675,9 @@ export function registerManagementApiRoutes(app: Express) {
       return;
     }
 
-    const n8nChatUrl = (process.env.N8N_CHAT_WEBHOOK_URL || '').trim();
-    const n8nSecret = (process.env.N8N_INTEGRATION_SECRET || '').trim();
+    const chatConfig = getN8nChatProxyConfig();
 
-    if (!n8nChatUrl) {
+    if (!chatConfig.chatUrl) {
       if (!allowSimulated) {
         res.status(503).json({
           ok: false,
@@ -622,68 +736,119 @@ export function registerManagementApiRoutes(app: Express) {
       return;
     }
 
-    // Live server-side forwarding to configured n8n Chat / Webhook URL
+    if (chatConfig.basicAuthIncomplete) {
+      console.error(
+        '[n8n:chat_proxy] Incomplete Basic Auth configuration: N8N_CHAT_USERNAME and N8N_CHAT_PASSWORD must both be set.'
+      );
+      await repository.recordIntegrationEvent({
+        eventType: 'n8n.chat_proxy.auth_misconfigured',
+        source: 'web_ai_demo',
+        status: 'failed',
+        httpStatus: 503,
+        summary: 'Incomplete n8n Chat Basic Auth credentials on server.',
+        errorMessage:
+          'Both N8N_CHAT_USERNAME and N8N_CHAT_PASSWORD must be configured.',
+        isDemo: true,
+      });
+      res.status(503).json({
+        ok: false,
+        error: 'n8n_auth_misconfigured',
+        message:
+          'Server Basic Auth credentials for n8n Chat are incomplete. Configure both N8N_CHAT_USERNAME and N8N_CHAT_PASSWORD.',
+      });
+      return;
+    }
+
+    // Live server-side forwarding to configured n8n Embedded Chat Trigger URL
     const startedAt = Date.now();
     try {
-      const parsedUrl = new URL(n8nChatUrl);
+      const parsedUrl = new URL(chatConfig.chatUrl);
       if (!['http:', 'https:'].includes(parsedUrl.protocol)) {
         throw new Error('Invalid N8N_CHAT_WEBHOOK_URL protocol');
       }
 
-      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-      if (n8nSecret) {
-        headers.Authorization = `Bearer ${n8nSecret}`;
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+        Accept: 'application/json, text/plain, */*',
+      };
+      if (chatConfig.authHeader) {
+        headers.Authorization = chatConfig.authHeader;
       }
 
       const upstream = await fetch(parsedUrl.toString(), {
         method: 'POST',
         headers,
         body: JSON.stringify({
+          action: 'sendMessage',
           sessionId,
           chatInput: message,
-          message,
-          source,
+          source: 'web_ai_demo',
           is_demo: true,
         }),
-        signal: AbortSignal.timeout(15000),
+        signal: AbortSignal.timeout(25000),
       });
 
       const latencyMs = Date.now() - startedAt;
       const rawText = await upstream.text();
 
       if (!upstream.ok) {
+        const isAuthFailure = upstream.status === 401 || upstream.status === 403;
+        const isNotFound = upstream.status === 404;
+        const safeErrDetail = isAuthFailure
+          ? `n8n Chat Trigger authentication failed (HTTP ${upstream.status}).`
+          : isNotFound
+            ? 'n8n Chat webhook URL not found (HTTP 404).'
+            : `n8n Chat Webhook returned HTTP ${upstream.status}.`;
+        console.error(`[n8n:chat_proxy] ${safeErrDetail}`);
+
         await repository.recordIntegrationEvent({
-          eventType: 'n8n.chat_proxy.failed',
+          eventType: isAuthFailure
+            ? 'n8n.chat_proxy.auth_failed'
+            : 'n8n.chat_proxy.failed',
           source: 'web_ai_demo',
           status: 'failed',
           httpStatus: upstream.status,
-          summary: `n8n Chat Webhook returned HTTP ${upstream.status}.`,
-          errorMessage: rawText.slice(0, 200),
+          summary: safeErrDetail,
+          errorMessage: isAuthFailure
+            ? 'Verify N8N_CHAT_USERNAME and N8N_CHAT_PASSWORD match the n8n Chat Trigger settings.'
+            : rawText.slice(0, 180) || safeErrDetail,
           isDemo: true,
         });
+
         res.status(502).json({
           ok: false,
-          error: 'n8n_upstream_error',
-          message: `The n8n AI endpoint returned HTTP ${upstream.status}. Please verify the n8n workflow.`,
+          error: isAuthFailure
+            ? 'n8n_auth_failed'
+            : isNotFound
+              ? 'n8n_not_found'
+              : 'n8n_upstream_error',
+          message: isAuthFailure
+            ? `n8n Chat authentication failed (HTTP ${upstream.status}). Please verify N8N_CHAT_USERNAME and N8N_CHAT_PASSWORD on the server.`
+            : isNotFound
+              ? 'n8n Chat webhook returned HTTP 404. Please verify N8N_CHAT_WEBHOOK_URL and ensure the workflow is active.'
+              : `The n8n AI endpoint returned HTTP ${upstream.status}. Please verify the n8n workflow.`,
         });
         return;
       }
 
-      let replyText = rawText;
-      let bookingReference: string | null = null;
-      try {
-        const json = JSON.parse(rawText);
-        const obj = Array.isArray(json) ? json[0] : json;
-        if (obj && typeof obj === 'object') {
-          replyText = String(
-            obj.output ?? obj.reply ?? obj.message ?? obj.text ?? obj.response ?? rawText
-          );
-          if (obj.booking_reference || obj.bookingReference) {
-            bookingReference = String(obj.booking_reference ?? obj.bookingReference);
-          }
-        }
-      } catch {
-        // Plain text reply from n8n
+      const parsedReply = extractN8nChatResponse(rawText);
+      if (!parsedReply.reply) {
+        await repository.recordIntegrationEvent({
+          eventType: 'n8n.chat_proxy.empty_reply',
+          source: 'web_ai_demo',
+          status: 'failed',
+          httpStatus: upstream.status,
+          summary: 'n8n Chat Trigger returned HTTP 200 without reply text.',
+          errorMessage: 'Empty response body from n8n workflow.',
+          isDemo: true,
+        });
+        res.status(502).json({
+          ok: false,
+          error: 'n8n_empty_response',
+          message:
+            'The n8n AI endpoint responded without message text. Please verify the AI Agent / Chat Trigger response node.',
+        });
+        return;
       }
 
       await repository.upsertConversation({
@@ -691,7 +856,7 @@ export function registerManagementApiRoutes(app: Express) {
         customerIdentifier: `Web AI Demo (${sessionId.slice(-6)})`,
         customerName: 'Web AI Demo Visitor',
         source: 'web_ai_demo',
-        status: bookingReference ? 'reservation_requested' : 'active',
+        status: parsedReply.bookingReference ? 'reservation_requested' : 'active',
         detectedIntent: 'live_n8n_chat',
         responseLatencyMs: latencyMs,
         isDemo: true,
@@ -704,7 +869,7 @@ export function registerManagementApiRoutes(app: Express) {
           {
             externalMessageId: `live-a-${crypto.randomUUID()}`,
             sender: 'assistant',
-            content: replyText,
+            content: parsedReply.reply,
             latencyMs,
           },
         ],
@@ -715,25 +880,39 @@ export function registerManagementApiRoutes(app: Express) {
         mode: 'live_n8n',
         simulated: false,
         sessionId,
-        reply: replyText,
-        bookingReference,
+        reply: parsedReply.reply,
+        bookingReference: parsedReply.bookingReference,
         latencyMs,
       });
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'n8n connection failed';
+      const isTimeout =
+        err instanceof Error &&
+        (err.name === 'TimeoutError' || err.name === 'AbortError');
+      const rawMsg = err instanceof Error ? err.message : 'n8n connection failed';
+      const safeMsg = isTimeout
+        ? 'Request to n8n AI agent timed out after 25 seconds.'
+        : rawMsg.replace(/https?:\/\/[^\s'"]+/gi, '[N8N_WEBHOOK]');
+      console.error(`[n8n:chat_proxy] ${safeMsg}`);
+
       await repository.recordIntegrationEvent({
-        eventType: 'n8n.chat_proxy.error',
+        eventType: isTimeout
+          ? 'n8n.chat_proxy.timeout'
+          : 'n8n.chat_proxy.error',
         source: 'web_ai_demo',
         status: 'failed',
-        httpStatus: 502,
-        summary: 'Failed to reach n8n chat webhook.',
-        errorMessage: msg,
+        httpStatus: isTimeout ? 504 : 502,
+        summary: isTimeout
+          ? 'n8n Chat Trigger timed out.'
+          : 'Failed to reach n8n chat webhook.',
+        errorMessage: safeMsg,
         isDemo: true,
       });
-      res.status(502).json({
+      res.status(isTimeout ? 504 : 502).json({
         ok: false,
-        error: 'n8n_unreachable',
-        message: `Could not connect to n8n chat endpoint: ${msg}`,
+        error: isTimeout ? 'n8n_timeout' : 'n8n_unreachable',
+        message: isTimeout
+          ? 'The n8n AI agent timed out while generating a reply. Please try again or check the workflow execution logs.'
+          : `Could not connect to the n8n chat endpoint (${safeMsg}).`,
       });
     }
   });

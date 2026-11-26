@@ -118,7 +118,7 @@ export function AutomationSettingsPage() {
                 <div>
                   <p className="font-semibold text-[#172332]">n8n Interactive Chat Webhook Proxy</p>
                   <p className="text-[#4F5D6A]">
-                    Configured via server env <span className="font-mono">N8N_CHAT_WEBHOOK_URL</span> for /automation-demo.
+                    Configured via server env <span className="font-mono">N8N_CHAT_WEBHOOK_URL</span> with optional HTTP Basic Auth (<span className="font-mono">N8N_CHAT_USERNAME</span> / <span className="font-mono">N8N_CHAT_PASSWORD</span>) for /automation-demo.
                   </p>
                 </div>
                 <ConnectionStateBadge state={status.n8nChatProxyState} />
